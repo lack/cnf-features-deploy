@@ -8,3 +8,6 @@ resources:
   - operator_operatorgroup.yaml
   - operator_catalogsource.yaml
   - operator_subscription.yaml
+bases:
+  - container_mount_namespace/master
+  - container_mount_namespace/worker
