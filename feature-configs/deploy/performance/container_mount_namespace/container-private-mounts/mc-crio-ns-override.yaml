@@ -1,0 +1,15 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: crio-ns-override
+spec:
+  config:
+    ignition:
+      version: 3.1.0
+    storage:
+      files:
+      - contents:
+          source: data:text/plain;charset=utf8;base64,W1VuaXRdCldhbnRzPWNvbnRhaW5lci1tb3VudC1uYW1lc3BhY2Uuc2VydmljZQpBZnRlcj1jb250YWluZXItbW91bnQtbmFtZXNwYWNlLnNlcnZpY2UKCltTZXJ2aWNlXQpFeGVjU3RhcnQ9CkV4ZWNTdGFydD1iYXNoIC1jICJuc2VudGVyIC1tIC10ICQoc3lzdGVtY3RsIHNob3cgLS1wcm9wZXJ0eSBNYWluUElEIC0tdmFsdWUgY29udGFpbmVyLW1vdW50LW5hbWVzcGFjZS5zZXJ2aWNlKSBcCiAgICAvdXNyL2Jpbi9jcmlvIFwKICAgICAgICAgICRDUklPX1NUT1JBR0VfT1BUSU9OUyBcCiAgICAgICAgICAkQ1JJT19ORVRXT1JLX09QVElPTlMgXAogICAgICAgICAgJENSSU9fTUVUUklDU19PUFRJT05TIgo=
+        filesystem: root
+        mode: 420
+        path: /etc/systemd/system/crio.service.d/override.conf
