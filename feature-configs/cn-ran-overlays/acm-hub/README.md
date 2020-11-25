@@ -20,7 +20,7 @@ If not defined, a default pull secret file is assumed to be at `/root/openshift_
 ```
 This will prepare following:
 - Create namespace `open-cluster-management`
-- Create a secret in the above namespace from a pull secret file. 
+- Create a secret in the above namespace from the pull secret file defined above. 
 
 3. Run 
   
@@ -38,6 +38,6 @@ oc get routes
 ```
 to get a route to the ACM console. 
 
-6. Login to the console with your cluster' kubeadmin credentials. (It can take ~2-3 minutes until the console can be accessed)
+6. Login to the console with your cluster' kubeadmin credentials. (It can take ~10-20 minutes until the console can be accessed)
 
 For official instructions on ACM hub installation, please refer to https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.1/html/install/installing 
