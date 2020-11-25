@@ -10,7 +10,7 @@ bases:
   # PAO deployment
   - ../../deployment/performance
   # PAO profile
-  - 'github.com/vitus133/ran-profiles/example/r640/performance?ref=dev'
+  - 'github.com/vitus133/ran-profiles/example/performance?ref=dev'
 
   # SR-IOV deployment (Profile is node-specific)
   - ../../deployment/sriov
