@@ -19,7 +19,7 @@ If not defined, a default pull secret file is assumed to be at `/root/openshift_
   ./setup_acm_hub.sh
 ```
 This will prepare following:
-- Create namespace `acm-hub`
+- Create namespace `open-cluster-management`
 - Create a secret in the above namespace from a pull secret file. 
 
 3. Run 
@@ -33,7 +33,7 @@ This will prepare following:
 
 5. Run 
 ```bash
-oc project acm-hub
+oc project open-cluster-management
 oc get routes
 ```
 to get a route to the ACM console. 
