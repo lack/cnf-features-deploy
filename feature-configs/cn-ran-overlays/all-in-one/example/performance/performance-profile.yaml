@@ -1,0 +1,25 @@
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+# This profile is for typical lab DELL R640 with 2 x 26 pcores
+  name: perf-example
+spec:
+  additionalKernelArgs:
+  - nosmt
+  cpu:
+    # Workaround for RT kernel bugs that consume too much CPU power
+    isolated: "1,3,5,7,9-51"
+    reserved: "0,2,4,6,8"
+  hugepages:
+    defaultHugepagesSize: 1G
+    pages:
+    - count: 16
+      size: 1G
+      node: 0
+  nodeSelector:
+    # Pay attention to the node label, create MCP accordingly
+    node-role.kubernetes.io/worker-cnf: ""
+  numa:
+    topologyPolicy: "restricted"
+  realTimeKernel:
+    enabled: true
