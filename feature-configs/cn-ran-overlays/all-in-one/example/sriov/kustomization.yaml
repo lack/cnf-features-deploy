@@ -3,4 +3,3 @@ kind: Kustomization
 
 resources:
   - sriov-network-node-policy-netdevice-mh.yaml
-  - sriov-network-node-policy-netdevice-fh.yaml
