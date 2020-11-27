@@ -3,4 +3,4 @@ kind: Kustomization
 
 resources:
   - sriov-network-mh.yaml
-  - sriov-network-fh.yaml
+
