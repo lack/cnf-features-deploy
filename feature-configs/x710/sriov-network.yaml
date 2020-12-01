@@ -1,0 +1,67 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: nic1port1
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam:  |
+    {
+      "type": "host-local",
+      "subnet": "192.168.101.0/24",
+      "rangeStart": "192.168.101.200",
+      "rangeEnd": "192.168.101.210"
+    }
+  networkNamespace: default
+  resourceName: nic1port1
+  vlan: 100
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: nic1port2
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam:  |
+    {
+      "type": "host-local",
+      "subnet": "192.168.102.0/24",
+      "rangeStart": "192.168.102.200",
+      "rangeEnd": "192.168.102.210"
+    }
+  networkNamespace: default
+  resourceName: nic1port2
+  vlan: 100
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: nic2port1
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam:  |
+    {
+      "type": "host-local",
+      "subnet": "192.168.201.0/24",
+      "rangeStart": "192.168.201.200",
+      "rangeEnd": "192.168.201.210"
+    }
+  networkNamespace: default
+  resourceName: nic2port1
+  vlan: 100
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: nic2port2
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam:  |
+    {
+      "type": "host-local",
+      "subnet": "192.168.202.0/24",
+      "rangeStart": "192.168.202.200",
+      "rangeEnd": "192.168.202.210"
+    }
+  networkNamespace: default
+  resourceName: nic2port2
+  vlan: 100

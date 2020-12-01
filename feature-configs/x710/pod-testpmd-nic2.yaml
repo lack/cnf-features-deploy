@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dpdk-testpmd-nic2
+  annotations:
+    k8s.v1.cni.cncf.io/networks: nic2port1, nic2port2
+spec:
+  restartPolicy: Never
+  containers:
+  - name: dpdk-testpmd
+    image: quay.io/krister/centos8_nfv-container-dpdk-testpmd:latest
+    imagePullPolicy: Always
+    env:
+    - name: PROMISC_DEVICES
+      value: "n"
+    - name: DISABLE_CPU_LOAD_BALANCE
+      value: "n"
+    - name: PEER_A_MAC
+      value: "3c:fd:fe:a9:cf:34"
+    - name: PEER_B_MAC
+      value: "3c:fd:fe:ee:4c:d0"
+    - name: SRIOV_ID_A
+      value: "NIC2PORT1"
+    - name: SRIOV_ID_B
+      value: "NIC2PORT2"
+    - name: MTU
+      value: "9000"
+    securityContext:
+      capabilities:
+        add: ["IPC_LOCK","SYS_ADMIN"]
+    resources:
+      limits:
+        cpu: 3
+        memory: "1000Mi"
+        hugepages-1Gi: "2Gi"
+      requests:
+        cpu: 3
+        memory: "1000Mi"
+        hugepages-1Gi: "2Gi"
+    volumeMounts:
+    - mountPath: /dev/hugepages
+      name: hugepage
+  nodeSelector:
+    node-role.kubernetes.io/worker-cnf: ""
+  volumes:
+  - name: hugepage
+    emptyDir:
+      medium: HugePages
+
