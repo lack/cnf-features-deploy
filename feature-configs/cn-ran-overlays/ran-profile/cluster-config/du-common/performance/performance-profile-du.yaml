@@ -19,7 +19,7 @@ spec:
       node: 0
   nodeSelector:
     # Pay attention to the node label, create MCP accordingly
-    node-role.kubernetes.io/worker-cnf: ""
+    node-role.kubernetes.io/worker-du: ""
   numa:
     topologyPolicy: "restricted"
   realTimeKernel:
