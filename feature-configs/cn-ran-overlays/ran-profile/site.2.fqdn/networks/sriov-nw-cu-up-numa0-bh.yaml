@@ -9,5 +9,5 @@ spec:
     }
   networkNamespace: site-2-fqdn-network-namespace
   resourceName: cu_up_bh_u_n0
-  vlan: 100
+  vlan: 142
 
