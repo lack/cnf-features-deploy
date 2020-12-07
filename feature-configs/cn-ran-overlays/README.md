@@ -32,11 +32,21 @@ The [`ran-profile`](ran-profile) directory contains the Kustomize profile for de
 - PTP operator and slave profile
 - SR-IOV operator and associated configurations
 
-# The manifest structure
+## The deployment model
 
-The profile is built from one cluster specific folder and one or more site-specific folders. This is done to address a deployment that includes remote worker nodes (several sites belonging to the same cluster).
+The RAN deployment modeled here is shown below:
+<img src="images/sites.png">
+
+The OCP cluster aggregates two sites. There is a local data center (Site 2), that hosts the OCP control plane, a pool of CU-UP nodes, one CU-CP node and a pool of DU nodes deployed on a dual-socket servers.
+
+In addition, there is a FEC site (Site 1) containing one DU remote worker node implemented on a single-socket server.
+
+## The manifest structure
+
+The manifest structure follows the deployment model described above.
+The profile is built from one cluster specific folder and one or more site-specific folders. 
 The [`cluster-config`](ran-profile/cluster-config) directory contains performance and PTP customizations based upon operator deployments in [`deploy`](../feature-configs/deploy) folder.
-The [`site.1.fqdn`](site.1.fqdn) folder contains site-specific network customizations. There could be several sites in one cluster, in case each site accommodates one ore more remote worker nodes.
+The [`site.1.fqdn`](site.1.fqdn) and [`site.2.fqdn`](site.2.fqdn) folders contain site-specific customizations. The number of site-specific folders can be increased to fit the particular deployment.
 
 
 # Prerequisites
