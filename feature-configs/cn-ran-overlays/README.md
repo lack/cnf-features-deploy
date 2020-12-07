@@ -1,9 +1,17 @@
 # __Cloud-native RAN profile__
 
 # Introduction
-This folder contains an example configurations for 5G radio access network sites.
-Radio access network is composed of Centralized units (CU), distributed units (DU) and Radio units (RU). Centralized units are split to control plane and user plane functions (CU-CP and CU-UP respectively).
-RAN from the telecommunications standard perspective is shown below:
+This folder contains an example configurations for 5G radio access network (RAN)sites.
+The 5G RAN in the broader context is shown below:
+
+*Source: 3GPP TS 23.501-g60*
+<img src="images/ran-3gpp.png">
+
+RAN external interfaces (N2 and N3) carry control plane and user plane data respectively. They compose RAN backhaul networks. RAN backhaul may also aggregate one or more management networks, while the separation between all the networks is often realized through VLAN tagging.
+N1 interface is transparent to RAN (encapsulated in N2).
+
+Radio access network is divided to Centralized units (CU), distributed units (DU) and Radio units (RU). Centralized units are split to control plane and user plane functions (CU-CP and CU-UP respectively).
+RAN entities and internal interfaces from the telecommunications standard perspective are shown below:
 
 <img src="images/ran.png">
 
