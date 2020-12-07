@@ -5,7 +5,7 @@ metadata:
 spec:
   cpu:
     isolated: "5,7,9"
-    reserved: "0-4,6,8,10-103"
+    reserved: "0-4,6,8,10-51"
   hugepages:
     defaultHugepagesSize: 1G
     pages: 
@@ -18,3 +18,5 @@ spec:
     topologyPolicy: best-effort
   realTimeKernel:
     enabled: false
+  additionalKernelArgs:
+  - nosmt
