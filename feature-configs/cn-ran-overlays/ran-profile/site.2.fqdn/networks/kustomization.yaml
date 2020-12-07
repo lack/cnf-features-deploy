@@ -8,5 +8,9 @@ resources:
   - sriov-nw-cu-up-numa0-mh.yaml
   - sriov-nnp-cu-up-numa1-mh-dpdk.yaml
   - sriov-nw-cu-up-numa1-mh.yaml
+  - sriov-nnp-cu-up-numa0-bh-dpdk.yaml
+  - sriov-nw-cu-up-numa0-bh.yaml
+  - sriov-nnp-cu-up-numa1-bh-dpdk.yaml
+  - sriov-nw-cu-up-numa1-bh.yaml
 
 
