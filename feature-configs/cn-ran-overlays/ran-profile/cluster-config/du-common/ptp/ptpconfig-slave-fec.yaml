@@ -1,0 +1,11 @@
+apiVersion: ptp.openshift.io/v1
+kind: PtpConfig
+metadata:
+  name: slave-fec
+  namespace: openshift-ptp
+spec:
+  recommend:
+  - profile: "slave-fec"
+    priority: 4
+    match:
+    - nodeLabel: "node-role.kubernetes.io/worker-du-fec"

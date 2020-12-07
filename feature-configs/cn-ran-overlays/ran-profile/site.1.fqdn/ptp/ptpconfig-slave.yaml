@@ -1,15 +1,15 @@
 apiVersion: ptp.openshift.io/v1
 kind: PtpConfig
 metadata:
-  name: grandmaster
+  name: slave-fec
   namespace: openshift-ptp
 spec:
   profile:
-  - name: "grandmaster"
-# The interface name is hardware-specific    
+  - name: "slave-fec"
+# The interface name is hardware-specific  
     interface: "ens1f0"
-    ptp4lOpts: "-2 --summary_interval 0"
-    phc2sysOpts: "-a -r -r -n 24"
+    ptp4lOpts: "-2 -s --summary_interval -4"
+    phc2sysOpts: "-a -r -n 24"
     ptp4lConf: |
       [global]
       #
@@ -111,9 +111,3 @@ spec:
       manufacturerIdentity 00:00:00
       userDescription ;
       timeSource 0xA0
-  recommend:
-  - profile: "grandmaster"
-    priority: 4
-    match:
-    - nodeLabel: "ptp/grandmaster"
-

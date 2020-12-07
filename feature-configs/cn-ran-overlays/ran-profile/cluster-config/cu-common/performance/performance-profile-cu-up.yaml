@@ -6,15 +6,6 @@ spec:
   # Hyperthreading is desired for CU-UP, nosmt is commented out:
   # additionalKernelArgs:
   # - nosmt
-  cpu:
-    isolated: "2-103"
-    reserved: "0-1"
-  hugepages:
-    defaultHugepagesSize: 1G
-    pages:
-    - count: 16
-      size: 1G
-      node: 0
   nodeSelector:
     node-role.kubernetes.io/worker-cu-up: ""
   numa:

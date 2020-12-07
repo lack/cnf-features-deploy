@@ -1,0 +1,14 @@
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+  name: perf-example-cu-up
+spec:
+  cpu:
+    isolated: "2-103"
+    reserved: "0-1"
+  hugepages:
+    defaultHugepagesSize: 1G
+    pages:
+    - count: 16
+      size: 1G
+      node: 0
