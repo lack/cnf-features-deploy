@@ -18,7 +18,7 @@ bases:
   # PAO deployment
   - ../../../deploy/performance
   # PAO profile is given as an example. Must be adapted for a specific hardware
-  - du-common/performance
+  # - du-common/performance
   - cu-common/performance
 
 

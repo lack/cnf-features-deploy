@@ -1,0 +1,11 @@
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+  name: perf-example-du-fec
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/worker-du-fec: ""
+  numa:
+    topologyPolicy: "restricted"
+  realTimeKernel:
+    enabled: true

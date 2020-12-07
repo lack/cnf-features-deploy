@@ -1,7 +1,7 @@
 apiVersion: performance.openshift.io/v1
 kind: PerformanceProfile
 metadata:
-  name: perf-example-du
+  name: perf-example-du-fec
 spec:
   additionalKernelArgs:
   - nosmt
@@ -16,11 +16,3 @@ spec:
     - count: 16
       size: 1G
       node: 0
-  nodeSelector:
-    # Pay attention to the node label, create MCP accordingly
-    node-role.kubernetes.io/worker-du: ""
-  numa:
-    topologyPolicy: "restricted"
-  realTimeKernel:
-    # For CU should be false
-    enabled: true
