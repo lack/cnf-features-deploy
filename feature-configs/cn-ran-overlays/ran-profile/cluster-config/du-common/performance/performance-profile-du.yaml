@@ -1,8 +1,7 @@
 apiVersion: performance.openshift.io/v1
 kind: PerformanceProfile
 metadata:
-# This profile is for typical lab DELL R640 with 2 x 26 pcores
-  name: perf-example
+  name: perf-example-du
 spec:
   additionalKernelArgs:
   - nosmt
