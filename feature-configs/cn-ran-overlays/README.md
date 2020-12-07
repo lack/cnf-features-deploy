@@ -36,7 +36,7 @@ The [`ran-profile`](ran-profile) directory contains the Kustomize profile for de
 
 The profile is built from one cluster specific folder and one or more site-specific folders. This is done to address a deployment that includes remote worker nodes (several sites belonging to the same cluster).
 The [`cluster-config`](ran-profile/cluster-config) directory contains performance and PTP customizations based upon operator deployments in [`deploy`](../feature-configs/deploy) folder.
-The [`site.1.fqdn`](site.1.fqdn) folder contains site-specific network customizations.
+The [`site.1.fqdn`](site.1.fqdn) folder contains site-specific network customizations. There could be several sites in one cluster, in case each site accommodates one ore more remote worker nodes.
 
 
 # Prerequisites
@@ -91,24 +91,30 @@ oc label --overwrite node/{your node name} node-role.kubernetes.io/worker-du=""
 oc label --overwrite node/{your node name} ptp/slave=""
 ```
 
+
 ### CU-CP nodes
 ```bash
 oc label --overwrite node/{your node name} node-role.kubernetes.io/worker-cu-cp=""
 ```
+
 
 ### CU-UP nodes
 ```bash
 oc label --overwrite node/{your node name} node-role.kubernetes.io/worker-cu-up=""
 ```
 
+
 ## 3. Update the manifests for your specific hardware 
 Performance profiles, SR-IOV network policies and PTP profile must take the specific hardware details into account.
+
 
 ### Performance profile
 Update the cpu section of `performance-profile-du.yaml`, `performance-profile-cu-cp.yaml` and `performance-profile-cu-up.yaml` to reflect the amount of CPU cores available on the correspondent nodes, Update the `hugepages` section to reflect your application memory requirements.
 
+
 ### SR-IOV network node policies
 Update the SR-IOV network node policies to reflect the manufacturer details and physical NIC port names on your hardware.
+
 
 #### SR-IOV configuration notes
 SriovNetworkNodePolicy object must be configured differently for different NIC models and placements. 
@@ -129,8 +135,53 @@ CU-CP networks are described [here](#cu_cp_nw)
 
 DU networks are described [here](#du_nw)
 
-#### How to find your NIC information
-TODO
+
+#### __How to find your NIC information__
+SSH to your worker node:
+```bash
+ssh core@<your worker node>
+```
+
+
+##### __Find relation between interface names and PCI addresses__
+```bash
+[core@node ~]$ grep PCI_SLOT_NAME /sys/class/net/*/device/uevent
+/sys/class/net/eno1/device/uevent:PCI_SLOT_NAME=0000:19:00.0
+/sys/class/net/eno2/device/uevent:PCI_SLOT_NAME=0000:19:00.1
+/sys/class/net/ens1f0/device/uevent:PCI_SLOT_NAME=0000:3b:00.0
+/sys/class/net/ens1f1/device/uevent:PCI_SLOT_NAME=0000:3b:00.1
+/sys/class/net/ens3f0/device/uevent:PCI_SLOT_NAME=0000:d8:00.0
+/sys/class/net/ens3f1/device/uevent:PCI_SLOT_NAME=0000:d8:00.1
+
+```
+
+
+##### __Find NIC NUMA nodes__
+
+```bash
+[core@node ~]$ cat /sys/class/net/*/device/numa_node
+0
+0
+0
+0
+1
+1
+
+```
+
+
+##### __Find relation between PCI addresses and NIC manufacturers__
+```bash
+[core@node ~]$ lspci |grep Ether
+19:00.0 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
+19:00.1 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]
+3b:00.0 Ethernet controller: Intel Corporation Ethernet Controller XXV710 for 25GbE SFP28 (rev 02)
+3b:00.1 Ethernet controller: Intel Corporation Ethernet Controller XXV710 for 25GbE SFP28 (rev 02)
+d8:00.0 Ethernet controller: Intel Corporation Ethernet Controller XXV710 for 25GbE SFP28 (rev 02)
+d8:00.1 Ethernet controller: Intel Corporation Ethernet Controller XXV710 for 25GbE SFP28 (rev 02)
+
+```
+
 
 ### PTP NIC port selector in PTP profile
 Update the PTP slave port selector in the [`ptpconfig-slave.yaml`](ran-profile/cluster-config/du-common/ptp/ptpconfig-slave.yaml)
@@ -145,6 +196,11 @@ spec:
 
 
 ### <a name="cu_up_nw"></a>CU-UP networks
+
+In addition to default cluster network, CU-UP operates on the following networks in this example:
+- __mh-net-u__ - Midhaul user plane network. The standard name of this network is F1-U, but in practical implementation it can be aggregated with management network(s)
+- __bh-net-u__ - Backhaul user plane network
+
 <img src="images/cu-up.png">
 
 ### <a name="cu_cp_nw"></a>CU-CP networks
