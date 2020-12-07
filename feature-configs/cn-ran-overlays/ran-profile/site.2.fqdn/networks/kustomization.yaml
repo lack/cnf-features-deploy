@@ -6,5 +6,7 @@ resources:
   - sriov-nw-ns.yaml
   - sriov-nnp-cu-up-numa0-mh-dpdk.yaml
   - sriov-nw-cu-up-numa0-mh.yaml
+  - sriov-nnp-cu-up-numa1-mh-dpdk.yaml
+  - sriov-nw-cu-up-numa1-mh.yaml
 
 
