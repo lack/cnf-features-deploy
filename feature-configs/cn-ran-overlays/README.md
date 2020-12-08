@@ -59,56 +59,21 @@ The [`site.1.fqdn`](site.1.fqdn) and [`site.2.fqdn`](site.2.fqdn) folders contai
 
 # Prerequisites
 
-## 1. Create machine config pools
-There are different configuration requirements for DU, CU-CP and CU-UP nodes.
-Create a machine config pool for each of the above node classes, as shown in the examples below.
+## 1. Label the nodes
+The profile installs four machine config pools: cu-up, cu-cp, du-fec and du-ldc.
+Include the designated worker nodes in the above machine config pools by labelling them as described below. PTP profile will be istalled to worker nodes labelled as `worker-du-fec` or `worker-du-ldc`. 
 
-### CU-UP machine config pool example
-The example MCP for the CU-UP is provided in [`cu_up_mcp.yaml`](ran-profile/cluster-config/cu-common/cu_up_mcp.yaml):
+### DU FEC nodes
 
-```yml
-apiVersion: machineconfiguration.openshift.io/v1
-kind: MachineConfigPool
-metadata:
-  name: worker-cu-up
-  labels:
-    machineconfiguration.openshift.io/role: worker-cu-up
-spec:
-  machineConfigSelector:
-    matchExpressions:
-      - {
-          key: machineconfiguration.openshift.io/role,
-          operator: In,
-          values: [worker-cu-up, worker],
-        }
-  paused: false
-  nodeSelector:
-    matchLabels:
-      node-role.kubernetes.io/worker-cu-up: ""
-```
-If your deployment contains CU-UP, create the above machine config pool as follows:
 ```bash
-oc apply -f cu_up_mcp.yaml
+oc label --overwrite node/{your node name} node-role.kubernetes.io/worker-du-fec=""
 ```
-### CU-CP machine config pool example
-CU-CP MCP example is provided in [`cu_cp_mcp.yaml`](ran-profile/cluster-config/cu-common/cu_cp_mcp.yaml). Create this MCP as shown above if your cluster contains CU-CP worker nodes.
 
-### DU machine config pool example
-DU MCP example is provided in [`du_mcp.yaml`](ran-profile/cluster-config/du-common/du_mcp.yaml). Create this MCP as shown above if your cluster contains DU worker nodes.
+### DU LDC nodes
 
-
-## 2. Label the nodes
-
-Include the designated worker nodes in the above machine config pools by labelling them appropriately:
-
-### DU nodes
-
-DU nodes are labeled for both "role" and PTP selectors.
 ```bash
-oc label --overwrite node/{your node name} node-role.kubernetes.io/worker-du=""
-oc label --overwrite node/{your node name} ptp/slave=""
+oc label --overwrite node/{your node name} node-role.kubernetes.io/worker-du-ldc=""
 ```
-
 
 ### CU-CP nodes
 ```bash
@@ -122,16 +87,15 @@ oc label --overwrite node/{your node name} node-role.kubernetes.io/worker-cu-up=
 ```
 
 
-## 3. Update the manifests for your specific hardware 
+## 2. Update the manifests for your specific hardware 
 Performance profiles, SR-IOV network policies and PTP profile must take the specific hardware details into account.
 
 
 ### Performance profile
-Update the cpu section of `performance-profile-du.yaml`, `performance-profile-cu-cp.yaml` and `performance-profile-cu-up.yaml` to reflect the amount of CPU cores available on the correspondent nodes, Update the `hugepages` section to reflect your application memory requirements.
-
+In the site folders, update the cpu section of `performance-profile-du-fec.yaml`, `performance-profile-du-ldc.yaml`, `performance-profile-cu-cp.yaml` and `performance-profile-cu-up.yaml` to reflect the amount of CPU cores available on the correspondent nodes, Update the `hugepages` section to reflect your application memory requirements. Update `additionalKernelArgs` to enable or disable the hyperthreading.
 
 ### SR-IOV network node policies
-Update the SR-IOV network node policies to reflect the manufacturer details and physical NIC port names on your hardware.
+In the site folders, update the SR-IOV network node policies to reflect the manufacturer details and physical NIC port names on your hardware.
 
 
 #### SR-IOV configuration notes
@@ -202,7 +166,8 @@ d8:00.1 Ethernet controller: Intel Corporation Ethernet Controller XXV710 for 25
 
 
 ### PTP NIC port selector in PTP profile
-Update the PTP slave port selector in the [`ptpconfig-slave.yaml`](ran-profile/cluster-config/du-common/ptp/ptpconfig-slave.yaml)
+Update the PTP slave port selector in the site folders to match your designated PTP port name:
+
 ```yml
 spec:
   profile:
