@@ -2,5 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ptpconfig-slave-fec.yaml
+  - ptpconfig-du-fec.yaml
+  - ptpconfig-du-ldc.yaml
+  - disable-chronyd-du-fec.yaml
+  - disable-chronyd-du-ldc.yaml
 
