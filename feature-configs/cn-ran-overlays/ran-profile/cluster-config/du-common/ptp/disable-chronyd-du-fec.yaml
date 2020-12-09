@@ -22,7 +22,7 @@ spec:
             PIDFile=/run/chrony/chronyd.pid
             EnvironmentFile=-/etc/sysconfig/chronyd
             ExecStart=/usr/sbin/chronyd $OPTIONS
-	          ExecStartPost=/usr/libexec/chrony-helper update-daemon
+            ExecStartPost=/usr/libexec/chrony-helper update-daemon
             PrivateTmp=yes
             ProtectHome=yes
             ProtectSystem=full

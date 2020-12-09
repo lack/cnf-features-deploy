@@ -1,11 +1,11 @@
 apiVersion: ptp.openshift.io/v1
 kind: PtpConfig
 metadata:
-  name: slave-fec
+  name: du-fec
   namespace: openshift-ptp
 spec:
   profile:
-  - name: "slave-fec"
+  - name: "du-fec"
 # The interface name is hardware-specific  
     interface: "ens1f0"
     ptp4lOpts: "-2 -s --summary_interval -4"
