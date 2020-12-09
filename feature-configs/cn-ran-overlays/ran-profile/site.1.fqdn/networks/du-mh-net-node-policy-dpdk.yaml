@@ -14,7 +14,7 @@ spec:
 # The exact physical function name must match the hardware used    
     pfNames: ["ens1f1"]
   nodeSelector:
-    node-role.kubernetes.io/worker-du: ""
+    node-role.kubernetes.io/worker-du-fec: ""
     feature.node.kubernetes.io/network-sriov.capable: "true"
   numVfs: 4
   priority: 10
