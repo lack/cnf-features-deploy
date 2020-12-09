@@ -3,7 +3,7 @@ kind: Kustomization
 
 resources:
   - ptpconfig-du-fec.yaml
-  - ptpconfig-du-ldc.yaml
+  # - ptpconfig-du-ldc.yaml
   - disable-chronyd-du-fec.yaml
-  - disable-chronyd-du-ldc.yaml
+  # - disable-chronyd-du-ldc.yaml
 
