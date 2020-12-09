@@ -4,5 +4,5 @@ kind: Kustomization
 resources:
   - du-fec-mcp.yaml
   - du-ldc-mcp.yaml
-  - performance-profile-du-ldc.yaml
+  # - performance-profile-du-ldc.yaml
   - performance-profile-du-fec.yaml
