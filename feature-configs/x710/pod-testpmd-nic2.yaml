@@ -4,7 +4,9 @@ metadata:
   name: dpdk-testpmd-nic2
   annotations:
     k8s.v1.cni.cncf.io/networks: nic2port1, nic2port2
+    cpu-load-balancing.crio.io: "true"
 spec:
+  runtimeClassName: performance-performance
   restartPolicy: Never
   containers:
   - name: dpdk-testpmd
