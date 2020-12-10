@@ -9,17 +9,17 @@ bases:
   # SR-IOV deployment (Networks are deployed as a part of site configuration)
   # SR-IOV network node policies are defined per site
   ## Uncomment for upstream branch
-  # - ../../../deploy/sriov
+  - ../../../deploy/sriov
   ## Uncomment for release-4.6 branch
-  - github.com/openshift-kni/cnf-features-deploy/feature-configs/deploy/sriov?ref=release-4.6
+  # - github.com/openshift-kni/cnf-features-deploy/feature-configs/deploy/sriov?ref=release-4.6
   
   # SCTP patch
   - ../../../deploy/sctp
 
   # PAO deployment
   ## Uncomment for upstream branch
-  # - ../../../deploy/performance
+  - ../../../deploy/performance
   ## Uncomment for release-4.6 branch
-  - github.com/openshift-kni/cnf-features-deploy/feature-configs/deploy/performance?ref=release-4.6
+  # - github.com/openshift-kni/cnf-features-deploy/feature-configs/deploy/performance?ref=release-4.6
 
 

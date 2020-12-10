@@ -86,6 +86,11 @@ oc label --overwrite node/{your node name} node-role.kubernetes.io/worker-cu-cp=
 oc label --overwrite node/{your node name} node-role.kubernetes.io/worker-cu-up=""
 ```
 
+## 3. Choose the operators image stream
+
+By default the operators will be installed from the upstream branch.
+This can be changed in [`ran-profile/cluster-config/kustomization.yaml`](ran-profile/cluster-config/kustomization.yaml)
+
 
 ## 2. Update the manifests for your specific hardware 
 Performance profiles, SR-IOV network policies and PTP profile must take the specific hardware details into account.
