@@ -3,9 +3,9 @@ kind: Kustomization
 
 bases:
   - cluster-config
-  # This site contains DU:
-  - site.1.fqdn
-  # This site contains CU-UP
-  - site.2.fqdn
+  # This site contains DU-FEC node(s):
+  - site-fec
+  # This site can contain CU-UPs, CU-CPs and DU-LDCs:
+  - site-ldc
 
 

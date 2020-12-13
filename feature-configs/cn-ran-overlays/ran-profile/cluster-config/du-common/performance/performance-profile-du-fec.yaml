@@ -7,5 +7,3 @@ spec:
     node-role.kubernetes.io/worker-du-fec: ""
   numa:
     topologyPolicy: "restricted"
-  realTimeKernel:
-    enabled: false
