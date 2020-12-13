@@ -1,10 +1,12 @@
 apiVersion: performance.openshift.io/v1
 kind: PerformanceProfile
 metadata:
-  name: perf-example-cu-up
+  name: perf-example-du-fec
 spec:
+  additionalKernelArgs:
+  - nosmt
   cpu:
-    isolated: "2-103"
+    isolated: "2-51"
     reserved: "0-1"
   hugepages:
     defaultHugepagesSize: 1G
@@ -12,5 +14,7 @@ spec:
     - count: 16
       size: 1G
       node: 0
+  realTimeKernel:
+    enabled: false
   nodeSelector:
-    node-role.kubernetes.io/worker-cu-up: ""
+    node-role.kubernetes.io/worker-du-ldc: ""

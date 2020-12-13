@@ -16,3 +16,5 @@ spec:
       node: 0
   realTimeKernel:
     enabled: false
+  nodeSelector:
+    node-role.kubernetes.io/worker-du-fec: ""

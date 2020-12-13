@@ -7,3 +7,5 @@ bases:
 patchesStrategicMerge:
   - performance-profile-cu-cp.yaml
   - performance-profile-cu-up.yaml
+  - performance-profile-cu-up.yaml
+

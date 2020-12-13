@@ -3,7 +3,5 @@ kind: PerformanceProfile
 metadata:
   name: perf-example-du-ldc
 spec:
-  nodeSelector:
-    node-role.kubernetes.io/worker-du-ldc: ""
   numa:
     topologyPolicy: "restricted"

@@ -6,8 +6,6 @@ spec:
   # Hyperthreading is desired for CU-UP, nosmt is commented out:
   # additionalKernelArgs:
   # - nosmt
-  nodeSelector:
-    node-role.kubernetes.io/worker-cu-up: ""
   numa:
     topologyPolicy: "restricted"
   realTimeKernel:

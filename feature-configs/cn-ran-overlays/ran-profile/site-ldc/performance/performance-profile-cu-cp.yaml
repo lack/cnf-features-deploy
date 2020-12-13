@@ -12,3 +12,5 @@ spec:
     - count: 16
       size: 1G
       node: 0
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-cp: ""
