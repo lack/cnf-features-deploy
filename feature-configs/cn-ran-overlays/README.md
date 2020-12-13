@@ -198,8 +198,6 @@ TODO
 
 # Deployment
 
-> :warning: __Please label the nodes before the deployment.__
-
 The profile is built in layers with __kustomize__.
 To get the profile output, run 
 ```bash
