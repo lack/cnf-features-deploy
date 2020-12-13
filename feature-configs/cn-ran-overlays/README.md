@@ -45,16 +45,16 @@ The [`ran-profile`](ran-profile) directory contains the Kustomize profile for de
 The RAN deployment modeled here is shown below:
 <img src="images/sites.png">
 
-The OCP cluster aggregates two sites. There is a local data center (Site 2), that hosts the OCP control plane, a pool of CU-UP nodes, one CU-CP node and a pool of DU nodes deployed on a dual-socket servers.
+The OCP cluster aggregates two sites. There is a local data center (`site-ldc`), that hosts a pool of CU-UP nodes, one CU-CP node and a pool of DU nodes deployed on a dual-socket servers.
 
-In addition, there is a FEC site (Site 1) containing one DU remote worker node implemented on a single-socket server.
+In addition, there is a FEC site (`site-fec`) containing one DU remote worker node implemented on a single-socket server.
 
 ## The manifest structure
 
 The manifest structure follows the deployment model described above.
 The profile is built from one cluster specific folder and one or more site-specific folders. 
 The [`cluster-config`](ran-profile/cluster-config) directory contains performance and PTP customizations based upon operator deployments in [`deploy`](../feature-configs/deploy) folder.
-The [`site.1.fqdn`](site.1.fqdn) and [`site.2.fqdn`](site.2.fqdn) folders contain site-specific customizations. The number of site-specific folders can be increased to fit the particular deployment.
+The [`site-fec`](site-fec) and [`site-ldc`](site-ldc) folders contain site-specific customizations. The number of site-specific folders can be increased to fit the particular deployment.
 
 
 # Prerequisites
