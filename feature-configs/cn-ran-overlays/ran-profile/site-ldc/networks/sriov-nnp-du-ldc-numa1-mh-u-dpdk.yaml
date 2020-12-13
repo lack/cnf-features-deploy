@@ -1,7 +1,7 @@
 apiVersion: sriovnetwork.openshift.io/v1
 kind: SriovNetworkNodePolicy
 metadata:
-  name: sriov-nnp-du-ldc-numa1-fh
+  name: sriov-nnp-du-ldc-numa1-mh-u
   namespace: openshift-sriov-network-operator
 spec:
 # This works for Intel based NICs.
@@ -12,9 +12,9 @@ spec:
   isRdma: false
   nicSelector:
 # The exact physical function name must match the hardware used    
-    pfNames: ["ens5f1"]
+    pfNames: ["ens7f0"]
   nodeSelector:
     node-role.kubernetes.io/worker-du-ldc: ""
   numVfs: 1
   priority: 10
-  resourceName: cu_up_fh_n1
+  resourceName: du_ldc_mh_u_n1

@@ -194,7 +194,8 @@ In addition to default cluster network, CU-UP operates on the following networks
 ### <a name="cu_cp_nw"></a>CU-CP networks
 TODO
 ### <a name="du_nw"></a>DU networks
-TODO
+<img src="images/du-ldc.png">
+
 
 # Deployment
 
