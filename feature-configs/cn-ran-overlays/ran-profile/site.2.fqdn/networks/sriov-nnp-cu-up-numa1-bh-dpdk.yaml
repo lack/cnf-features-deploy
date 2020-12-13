@@ -15,7 +15,6 @@ spec:
     pfNames: ["ens3f1"]
   nodeSelector:
     node-role.kubernetes.io/worker-cu-up: ""
-    feature.node.kubernetes.io/network-sriov.capable: "true"
   numVfs: 4
   priority: 10
   resourceName: cu_up_bh_u_n1
