@@ -7,7 +7,7 @@ spec:
   ipam:  |
     {
     }
-  networkNamespace: site-2-fqdn-network-namespace
+  networkNamespace: site-ldc-fqdn-network-namespace
   resourceName: cu_up_mh_u_n0
   vlan: 100
 

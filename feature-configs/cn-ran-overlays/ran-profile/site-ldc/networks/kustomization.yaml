@@ -12,5 +12,14 @@ resources:
   - sriov-nw-cu-up-numa0-bh.yaml
   - sriov-nnp-cu-up-numa1-bh-dpdk.yaml
   - sriov-nw-cu-up-numa1-bh.yaml
+  - sriov-nnp-du-ldc-numa0-fh-dpdk.yaml
+  - sriov-nnp-du-ldc-numa0-mh-dpdk.yaml
+  - sriov-nnp-du-ldc-numa1-fh-dpdk.yaml
+  - sriov-nnp-du-ldc-numa1-mh-dpdk.yaml
+  - sriov-nw-du-ldc-numa0-fh.yaml
+  - sriov-nw-du-ldc-numa0-mh.yaml
+  - sriov-nw-du-ldc-numa1-fh.yaml
+  - sriov-nw-du-ldc-numa1-mh.yaml
+
 
 
