@@ -8,4 +8,4 @@ spec:
   numa:
     topologyPolicy: "restricted"
   realTimeKernel:
-    enabled: true
+    enabled: false

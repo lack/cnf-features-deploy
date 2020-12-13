@@ -6,3 +6,4 @@ resources:
   - du-ldc-mcp.yaml
   # - performance-profile-du-ldc.yaml
   - performance-profile-du-fec.yaml
+  - kernel-patch-du-fec.yaml
