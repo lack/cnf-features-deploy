@@ -89,6 +89,8 @@ This structure can be scaled to accommodate more worker node types, however the 
 
 ### DU-FEC worker example:
 
+```bash
+
 cat <<EOF | oc apply -f -
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfigPool
@@ -110,6 +112,7 @@ spec:
       node-role.kubernetes.io/worker-du-fec: ""
 ---
 EOF
+```
 
 ### Other node types
 For DU-LDC, CU-UP and other types you might need, create as many additional machine config pools as needed for your deployment
