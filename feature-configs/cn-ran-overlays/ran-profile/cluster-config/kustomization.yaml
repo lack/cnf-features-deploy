@@ -4,20 +4,25 @@ kind: Kustomization
 bases:
   # Note - should be deleted in CU-only cluster
   # PTP operator deployment
+  ## Uncomment for the upstream branch
   - ../../../deploy/ptp
-  # PTP profiles
-  - du-common/ptp
+  ## Uncomment for the release-4.6 branch
+  # - github.com/openshift-kni/cnf-features-deploy/feature-configs/deploy/ptp?ref=release-4.6
 
   # SR-IOV deployment (Networks are deployed as a part of site configuration)
   # SR-IOV network node policies are defined per site
+  ## Uncomment for the upstream branch
   - ../../../deploy/sriov
+  ## Uncomment for the release-4.6 branch
+  # - github.com/openshift-kni/cnf-features-deploy/feature-configs/deploy/sriov?ref=release-4.6
   
-  # SCTP deployment (There is no profile)
+  # SCTP patch
   - ../../../deploy/sctp
 
   # PAO deployment
+  ## Uncomment for the upstream branch
   - ../../../deploy/performance
-  # PAO profile is given as an example. Must be adapted for a specific hardware
-  - du-common/performance
+  ## Uncomment for the release-4.6 branch
+  # - github.com/openshift-kni/cnf-features-deploy/feature-configs/deploy/performance?ref=release-4.6
 
 

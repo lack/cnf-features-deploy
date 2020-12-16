@@ -1,0 +1,7 @@
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+  name: perf-example-du-fec
+spec:
+  numa:
+    topologyPolicy: "restricted"

@@ -1,13 +1,13 @@
 apiVersion: ptp.openshift.io/v1
 kind: PtpConfig
 metadata:
-  name: slave
+  name: du-fec
   namespace: openshift-ptp
 spec:
   profile:
-  - name: "slave"
+  - name: "du-fec"
 # The interface name is hardware-specific  
-    interface: "eno1"
+    interface: "ens1f0"
     ptp4lOpts: "-2 -s --summary_interval -4"
     phc2sysOpts: "-a -r -n 24"
     ptp4lConf: |
@@ -111,8 +111,3 @@ spec:
       manufacturerIdentity 00:00:00
       userDescription ;
       timeSource 0xA0
-  recommend:
-  - profile: "slave"
-    priority: 4
-    match:
-    - nodeLabel: "ptp/slave"

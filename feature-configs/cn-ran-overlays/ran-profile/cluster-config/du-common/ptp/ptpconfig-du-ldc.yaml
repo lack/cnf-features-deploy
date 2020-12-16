@@ -1,0 +1,11 @@
+apiVersion: ptp.openshift.io/v1
+kind: PtpConfig
+metadata:
+  name: du-ldc
+  namespace: openshift-ptp
+spec:
+  recommend:
+  - profile: "du-ldc"
+    priority: 4
+    match:
+    - nodeLabel: "node-role.kubernetes.io/worker-du-ldc"

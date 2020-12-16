@@ -1,0 +1,12 @@
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+  name: perf-example-cu-up
+spec:
+  # Hyperthreading is desired for CU-UP, nosmt is commented out:
+  # additionalKernelArgs:
+  # - nosmt
+  numa:
+    topologyPolicy: "restricted"
+  realTimeKernel:
+    enabled: false

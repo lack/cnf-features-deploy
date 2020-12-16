@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+  - ../../cluster-config/cu-common/performance
+
+patchesStrategicMerge:
+  - performance-profile-cu-cp.yaml
+  - performance-profile-cu-up.yaml
+  - performance-profile-du-ldc.yaml
+

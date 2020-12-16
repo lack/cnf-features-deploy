@@ -1,0 +1,7 @@
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+  name: perf-example-du-ldc
+spec:
+  numa:
+    topologyPolicy: "restricted"

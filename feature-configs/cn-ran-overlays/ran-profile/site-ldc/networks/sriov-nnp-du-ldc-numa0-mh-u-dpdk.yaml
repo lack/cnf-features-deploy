@@ -1,0 +1,20 @@
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: sriov-nnp-du-ldc-numa0-mh-u
+  namespace: openshift-sriov-network-operator
+spec:
+# This works for Intel based NICs.
+# For Mellanox please change to:
+#     deviceType: netdevice
+#     isRdma: true
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+# The exact physical function name must match the hardware used    
+    pfNames: ["eth2"]
+  nodeSelector:
+    node-role.kubernetes.io/worker-du-ldc: ""
+  numVfs: 1
+  priority: 10
+  resourceName: du_ldc_mh_u_n0
