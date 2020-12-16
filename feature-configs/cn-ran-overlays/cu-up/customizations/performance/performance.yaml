@@ -1,0 +1,9 @@
+- op: replace
+  path: /metadata
+  value:
+    name: perf-cu-up
+
+- op: replace
+  path: /spec/nodeSelector
+  value:
+    node-role.kubernetes.io/worker-cu-up: ""

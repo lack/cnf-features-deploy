@@ -1,5 +1,16 @@
 #!/bin/bash
 
+export KUSTOMIZE_DIR="${KUSTOMIZE_DIR:-/tmp}"
+export KUSTOMIZE_BIN=$KUSTOMIZE_DIR/kustomize
+
+# Function: download the latest Kustomize binary to /tmp
+function get_kustomize_binary (){
+    pushd /tmp
+    curl -s "https://raw.githubusercontent.com/\
+kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+    popd
+}
+
 set -e
 . $(dirname "$0")/common.sh
 
@@ -11,6 +22,11 @@ fi
 if [ "$FEATURES" == "" ]; then
 	echo "[ERROR]: No FEATURES provided"
 	exit 1
+fi
+
+if ! stat $KUSTOMIZE_BIN &> /dev/null; then
+  echo "Downloading the Kustomize tool"
+  get_kustomize_binary
 fi
 
 # expect oc to be in PATH by default
@@ -38,9 +54,9 @@ do
     set +e
     # be verbose on last iteration only
     if [[ $iterations -eq $((max_iterations - 1)) ]] || [[ -n "${VERBOSE}" ]]; then
-      ${OC_TOOL} apply -k "$feature_dir"
+      $KUSTOMIZE_BIN build "$feature_dir" | ${OC_TOOL} apply -f -
     else
-      ${OC_TOOL} apply -k "$feature_dir" &> /dev/null
+      $KUSTOMIZE_BIN build "$feature_dir" | ${OC_TOOL} apply -f - &> /dev/null
     fi
 
     # shellcheck disable=SC2181
