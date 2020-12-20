@@ -7,6 +7,10 @@ export KUSTOMIZE_VERSION=3.8.8
 # expect oc to be in PATH by default
 export OC_TOOL="${OC_TOOL:-oc}"
 
+set -e
+
+. $(dirname "$0")/common.sh
+
 
 # Function: download the specified version of the Kustomize binary to the $KUSTOMIZE_DIR
 function get_kustomize_binary (){
@@ -17,9 +21,6 @@ kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"\
     popd)
 }
 
-set -e
-
-. $(dirname "$0")/common.sh
 
 if [ "$FEATURES_ENVIRONMENT" == "" ]; then
 	echo "[ERROR]: No FEATURES_ENVIRONMENT provided"
