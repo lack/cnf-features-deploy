@@ -2,16 +2,23 @@
 
 export KUSTOMIZE_DIR="${KUSTOMIZE_DIR:-/tmp}"
 export KUSTOMIZE_BIN=$KUSTOMIZE_DIR/kustomize
+export KUSTOMIZE_VERSION=3.8.8
 
-# Function: download the latest Kustomize binary to /tmp
+# expect oc to be in PATH by default
+export OC_TOOL="${OC_TOOL:-oc}"
+
+
+# Function: download the specified version of the Kustomize binary to the $KUSTOMIZE_DIR
 function get_kustomize_binary (){
-    pushd /tmp
-    curl -s "https://raw.githubusercontent.com/\
-kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-    popd
+    (pushd $KUSTOMIZE_DIR
+    curl -m 600 -s "https://raw.githubusercontent.com/\
+kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"\
+  | bash -s $KUSTOMIZE_VERSION
+    popd)
 }
 
 set -e
+
 . $(dirname "$0")/common.sh
 
 if [ "$FEATURES_ENVIRONMENT" == "" ]; then
@@ -24,13 +31,11 @@ if [ "$FEATURES" == "" ]; then
 	exit 1
 fi
 
-if ! stat $KUSTOMIZE_BIN &> /dev/null; then
+if [ -f $KUSTOMIZE_BIN ]; then
   echo "Downloading the Kustomize tool"
   get_kustomize_binary
 fi
 
-# expect oc to be in PATH by default
-export OC_TOOL="${OC_TOOL:-oc}"
 
 # Deploy features
 success=0
@@ -54,8 +59,12 @@ do
     set +e
     # be verbose on last iteration only
     if [[ $iterations -eq $((max_iterations - 1)) ]] || [[ -n "${VERBOSE}" ]]; then
+      # ${OC_TOOL} apply -k "$feature_dir"
+      # TODO: revert to the above after https://github.com/kubernetes/kubectl/issues/818 is merged:
       $KUSTOMIZE_BIN build "$feature_dir" | ${OC_TOOL} apply -f -
     else
+      # ${OC_TOOL} apply -k "$feature_dir" &> /dev/null
+      # TODO: revert to the above after https://github.com/kubernetes/kubectl/issues/818 is merged:
       $KUSTOMIZE_BIN build "$feature_dir" | ${OC_TOOL} apply -f - &> /dev/null
     fi
 
