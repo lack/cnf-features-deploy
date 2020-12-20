@@ -32,7 +32,7 @@ if [ "$FEATURES" == "" ]; then
 	exit 1
 fi
 
-if [ -f $KUSTOMIZE_BIN ]; then
+if [ ! -f $KUSTOMIZE_BIN ]; then
   echo "Downloading the Kustomize tool"
   get_kustomize_binary
 fi
