@@ -15,6 +15,8 @@ spec:
     pfNames: ["ens5f0"]
   nodeSelector:
     node-role.kubernetes.io/worker-du-fec: ""
-  numVfs: 1
+  # numVfs: 1
+  # Five VFs are required for testing
+  numVfs: 5
   priority: 10
   resourceName: du_fec_fh
