@@ -15,7 +15,8 @@ if [[ -z $1 || -z $2 || -z $3 ]]; then
   exit 1
 fi
 
-
+# Network resource can't contain dashes
+# We replace them by underscores
 NR_FROM=$(echo $2 | sed -e 's/-/_/')
 NR_TO=$(echo $3 | sed -e 's/-/_/')
 
