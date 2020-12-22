@@ -22,6 +22,6 @@ NR_TO=$(echo $3 | sed -e 's/-/_/')
 
 cp -rf $1/$2 $1/$3
 
-find $1/$3 -P -type f -exec sed -i -e "'s/'$2'/'$3'/g'" {} +
-find $1/$3 -P -type f -exec sed -i -e "'s/'$NR_FROM'/'$NR_TO'/g'" {} +
+find $1/$3 -type f -exec sed -i -e "'s/'$2'/'$3'/g'" {} +
+find $1/$3 -type f -exec sed -i -e "'s/'$NR_FROM'/'$NR_TO'/g'" {} +
 find $1/$3 -name '*'$2'*' -exec rename '*'$2'*' '*'$3'*' {} +
