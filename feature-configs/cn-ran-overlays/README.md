@@ -139,7 +139,804 @@ Contains `clone.sh` file (see [Scaling](#scaling)) and `mcp` folder with sample 
 ## <a name="scaling"></a>Scaling
 This structure can be easily scaled to accommodate more worker node types, however the assumption is that all the nodes performing the same function in a particular cluster will be identical in terms of the hardware used and the VLAN tags. If there is a need to create a new node type (due to a different hardware or a different network configuration), [clone.sh](./utils/clone.sh) comes to the rescue.
 Let's create a CU-CP machine type for our cluster. 
- 
+From the `utils` directory run: 
+```bash
+[user@host utils]$ ./clone.sh .. cu-up cu-cp
+Done
+```
+The `cu-cp` folder will be created amd patched to contain names and node selectors templated from the `cu-cp` name.
+The resulting profile can be seen as follows:
+```bash
+[user@host utils]$ /tmp/kustomize build ../cu-up
+```
+
+```{css, echo=FALSE}
+pre {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 100px;
+}
+```
+
+``{css, echo=FALSE}
+.scroll-100 {
+  max-height: 100px;
+  overflow-y: auto;
+  background-color: inherit;
+}
+```
+
+```{yml, class.output="scroll-100"}
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    openshift.io/cluster-monitoring: "true"
+  name: openshift-performance-addon-operator
+spec: {}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    openshift.io/cluster-monitoring: "true"
+    openshift.io/run-level: "1"
+  name: openshift-ptp
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    openshift.io/run-level: "1"
+  name: openshift-sriov-network-operator
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: site-cu-up-network-namespace
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: worker-cu-up
+  name: load-sctp-module-cu-up
+spec:
+  config:
+    ignition:
+      version: 2.2.0
+    storage:
+      files:
+      - contents:
+          source: data:,
+          verification: {}
+        filesystem: root
+        mode: 420
+        path: /etc/modprobe.d/sctp-blacklist.conf
+      - contents:
+          source: data:text/plain;charset=utf-8,sctp
+        filesystem: root
+        mode: 420
+        path: /etc/modules-load.d/sctp-load.conf
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: performance-addon-operator
+  namespace: openshift-performance-addon-operator
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: ptp-operators
+  namespace: openshift-ptp
+spec:
+  targetNamespaces:
+  - openshift-ptp
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: sriov-network-operators
+  namespace: openshift-sriov-network-operator
+spec:
+  targetNamespaces:
+  - openshift-sriov-network-operator
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: performance-addon-operator
+  namespace: openshift-marketplace
+spec:
+  displayName: Openshift Performance Addon Operator
+  icon:
+    base64data: ""
+    mediatype: ""
+  image: quay.io/openshift-kni/performance-addon-operator-index:4.7-snapshot
+  publisher: Red Hat
+  sourceType: grpc
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: performance-addon-operator
+  namespace: openshift-performance-addon-operator
+spec:
+  channel: "4.7"
+  name: performance-addon-operator
+  source: performance-addon-operator
+  sourceNamespace: openshift-marketplace
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ptp-operator-subscription
+  namespace: openshift-ptp
+spec:
+  channel: "4.6"
+  name: ptp-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: sriov-network-operator-subscription
+  namespace: openshift-sriov-network-operator
+spec:
+  channel: "4.6"
+  name: sriov-network-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+---
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+  name: perf-cu-up
+spec:
+  cpu:
+    isolated: 2-51
+    reserved: 0-1
+  hugepages:
+    defaultHugepagesSize: 1G
+    pages:
+    - count: 16
+      node: 0
+      size: 1G
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-up: ""
+  numa:
+    topologyPolicy: restricted
+  realTimeKernel:
+    enabled: false
+---
+apiVersion: ptp.openshift.io/v1
+kind: PtpConfig
+metadata:
+  name: slave
+  namespace: openshift-ptp
+spec:
+  profile:
+  - interface: ens1f0
+    name: slave
+    phc2sysOpts: -a -r -n 24
+    ptp4lConf: |
+      [global]
+      #
+      # Default Data Set
+      #
+      twoStepFlag 1
+      slaveOnly 0
+      priority1 128
+      priority2 128
+      domainNumber 24
+      #utc_offset 37
+      clockClass 248
+      clockAccuracy 0xFE
+      offsetScaledLogVariance 0xFFFF
+      free_running 0
+      freq_est_interval 1
+      dscp_event 0
+      dscp_general 0
+      dataset_comparison ieee1588
+      G.8275.defaultDS.localPriority 128
+      #
+      # Port Data Set
+      #
+      logAnnounceInterval -3
+      logSyncInterval -4
+      logMinDelayReqInterval -4
+      logMinPdelayReqInterval -4
+      announceReceiptTimeout 3
+      syncReceiptTimeout 0
+      delayAsymmetry 0
+      fault_reset_interval 4
+      neighborPropDelayThresh 20000000
+      masterOnly 0
+      G.8275.portDS.localPriority 128
+      #
+      # Run time options
+      #
+      assume_two_step 0
+      logging_level 6
+      path_trace_enabled 0
+      follow_up_info 0
+      hybrid_e2e 0
+      inhibit_multicast_service 0
+      net_sync_monitor 0
+      tc_spanning_tree 0
+      tx_timestamp_timeout 1
+      unicast_listen 0
+      unicast_master_table 0
+      unicast_req_duration 3600
+      use_syslog 1
+      verbose 0
+      summary_interval 0
+      kernel_leap 1
+      check_fup_sync 0
+      #
+      # Servo Options
+      #
+      pi_proportional_const 0.0
+      pi_integral_const 0.0
+      pi_proportional_scale 0.0
+      pi_proportional_exponent -0.3
+      pi_proportional_norm_max 0.7
+      pi_integral_scale 0.0
+      pi_integral_exponent 0.4
+      pi_integral_norm_max 0.3
+      step_threshold 0.0
+      first_step_threshold 0.00002
+      max_frequency 900000000
+      clock_servo pi
+      sanity_freq_limit 200000000
+      ntpshm_segment 0
+      #
+      # Transport options
+      #
+      transportSpecific 0x0
+      ptp_dst_mac 01:1B:19:00:00:00
+      p2p_dst_mac 01:80:C2:00:00:0E
+      udp_ttl 1
+      udp6_scope 0x0E
+      uds_address /var/run/ptp4l
+      #
+      # Default interface options
+      #
+      clock_type OC
+      network_transport UDPv4
+      delay_mechanism E2E
+      time_stamping hardware
+      tsproc_mode filter
+      delay_filter moving_median
+      delay_filter_length 10
+      egressLatency 0
+      ingressLatency 0
+      boundary_clock_jbod 0
+      #
+      # Clock description
+      #
+      productDescription ;;
+      revisionData ;;
+      manufacturerIdentity 00:00:00
+      userDescription ;
+      timeSource 0xA0
+    ptp4lOpts: -2 -s --summary_interval -4
+  recommend:
+  - match:
+    - nodeLabel: ptp/slave
+    priority: 4
+    profile: slave
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: sriov-nw-cu-up-numa0-bh
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam: |
+    {
+    }
+  networkNamespace: site-cu-up-network-namespace
+  resourceName: cu_up_bh_n0
+  vlan: 142
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: sriov-nw-cu-up-numa0-mh
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam: |
+    {
+    }
+  networkNamespace: site-cu-up-network-namespace
+  resourceName: cu_up_mh_n0
+  vlan: 101
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: sriov-nw-cu-up-numa1-bh
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam: |
+    {
+    }
+  networkNamespace: site-cu-up-network-namespace
+  resourceName: cu_up_bh_n1
+  vlan: 142
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: sriov-nw-cu-up-numa1-mh
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam: |
+    {
+    }
+  networkNamespace: site-cu-up-network-namespace
+  resourceName: cu_up_mh_n1
+  vlan: 101
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: sriov-nnp-cu-up-numa0-bh
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+    pfNames:
+    - ens1f0
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-up: ""
+  numVfs: 5
+  priority: 10
+  resourceName: cu_up_bh_n0
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: sriov-nnp-cu-up-numa0-mh
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+    pfNames:
+    - ens1f1
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-up: ""
+  numVfs: 5
+  priority: 10
+  resourceName: cu_up_mh_n0
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: sriov-nnp-cu-up-numa1-bh
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+    pfNames:
+    - ens3f0
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-up: ""
+  numVfs: 5
+  priority: 10
+  resourceName: cu_up_bh_n1
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: sriov-nnp-cu-up-numa1-mh
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+    pfNames:
+    - ens3f1
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-up: ""
+  numVfs: 5
+  priority: 10
+  resourceName: cu_up_mh_n1
+[vgrinber@vgrinber utils]$ /tmp/kustomize build ../cu-cp
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    openshift.io/cluster-monitoring: "true"
+  name: openshift-performance-addon-operator
+spec: {}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    openshift.io/cluster-monitoring: "true"
+    openshift.io/run-level: "1"
+  name: openshift-ptp
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    openshift.io/run-level: "1"
+  name: openshift-sriov-network-operator
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: site-cu-cp-network-namespace
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: worker-cu-cp
+  name: load-sctp-module-cu-cp
+spec:
+  config:
+    ignition:
+      version: 2.2.0
+    storage:
+      files:
+      - contents:
+          source: data:,
+          verification: {}
+        filesystem: root
+        mode: 420
+        path: /etc/modprobe.d/sctp-blacklist.conf
+      - contents:
+          source: data:text/plain;charset=utf-8,sctp
+        filesystem: root
+        mode: 420
+        path: /etc/modules-load.d/sctp-load.conf
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: performance-addon-operator
+  namespace: openshift-performance-addon-operator
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: ptp-operators
+  namespace: openshift-ptp
+spec:
+  targetNamespaces:
+  - openshift-ptp
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: sriov-network-operators
+  namespace: openshift-sriov-network-operator
+spec:
+  targetNamespaces:
+  - openshift-sriov-network-operator
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: performance-addon-operator
+  namespace: openshift-marketplace
+spec:
+  displayName: Openshift Performance Addon Operator
+  icon:
+    base64data: ""
+    mediatype: ""
+  image: quay.io/openshift-kni/performance-addon-operator-index:4.7-snapshot
+  publisher: Red Hat
+  sourceType: grpc
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: performance-addon-operator
+  namespace: openshift-performance-addon-operator
+spec:
+  channel: "4.7"
+  name: performance-addon-operator
+  source: performance-addon-operator
+  sourceNamespace: openshift-marketplace
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ptp-operator-subscription
+  namespace: openshift-ptp
+spec:
+  channel: "4.6"
+  name: ptp-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: sriov-network-operator-subscription
+  namespace: openshift-sriov-network-operator
+spec:
+  channel: "4.6"
+  name: sriov-network-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+---
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+  name: perf-cu-cp
+spec:
+  cpu:
+    isolated: 2-51
+    reserved: 0-1
+  hugepages:
+    defaultHugepagesSize: 1G
+    pages:
+    - count: 16
+      node: 0
+      size: 1G
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-cp: ""
+  numa:
+    topologyPolicy: restricted
+  realTimeKernel:
+    enabled: false
+---
+apiVersion: ptp.openshift.io/v1
+kind: PtpConfig
+metadata:
+  name: slave
+  namespace: openshift-ptp
+spec:
+  profile:
+  - interface: ens1f0
+    name: slave
+    phc2sysOpts: -a -r -n 24
+    ptp4lConf: |
+      [global]
+      #
+      # Default Data Set
+      #
+      twoStepFlag 1
+      slaveOnly 0
+      priority1 128
+      priority2 128
+      domainNumber 24
+      #utc_offset 37
+      clockClass 248
+      clockAccuracy 0xFE
+      offsetScaledLogVariance 0xFFFF
+      free_running 0
+      freq_est_interval 1
+      dscp_event 0
+      dscp_general 0
+      dataset_comparison ieee1588
+      G.8275.defaultDS.localPriority 128
+      #
+      # Port Data Set
+      #
+      logAnnounceInterval -3
+      logSyncInterval -4
+      logMinDelayReqInterval -4
+      logMinPdelayReqInterval -4
+      announceReceiptTimeout 3
+      syncReceiptTimeout 0
+      delayAsymmetry 0
+      fault_reset_interval 4
+      neighborPropDelayThresh 20000000
+      masterOnly 0
+      G.8275.portDS.localPriority 128
+      #
+      # Run time options
+      #
+      assume_two_step 0
+      logging_level 6
+      path_trace_enabled 0
+      follow_up_info 0
+      hybrid_e2e 0
+      inhibit_multicast_service 0
+      net_sync_monitor 0
+      tc_spanning_tree 0
+      tx_timestamp_timeout 1
+      unicast_listen 0
+      unicast_master_table 0
+      unicast_req_duration 3600
+      use_syslog 1
+      verbose 0
+      summary_interval 0
+      kernel_leap 1
+      check_fup_sync 0
+      #
+      # Servo Options
+      #
+      pi_proportional_const 0.0
+      pi_integral_const 0.0
+      pi_proportional_scale 0.0
+      pi_proportional_exponent -0.3
+      pi_proportional_norm_max 0.7
+      pi_integral_scale 0.0
+      pi_integral_exponent 0.4
+      pi_integral_norm_max 0.3
+      step_threshold 0.0
+      first_step_threshold 0.00002
+      max_frequency 900000000
+      clock_servo pi
+      sanity_freq_limit 200000000
+      ntpshm_segment 0
+      #
+      # Transport options
+      #
+      transportSpecific 0x0
+      ptp_dst_mac 01:1B:19:00:00:00
+      p2p_dst_mac 01:80:C2:00:00:0E
+      udp_ttl 1
+      udp6_scope 0x0E
+      uds_address /var/run/ptp4l
+      #
+      # Default interface options
+      #
+      clock_type OC
+      network_transport UDPv4
+      delay_mechanism E2E
+      time_stamping hardware
+      tsproc_mode filter
+      delay_filter moving_median
+      delay_filter_length 10
+      egressLatency 0
+      ingressLatency 0
+      boundary_clock_jbod 0
+      #
+      # Clock description
+      #
+      productDescription ;;
+      revisionData ;;
+      manufacturerIdentity 00:00:00
+      userDescription ;
+      timeSource 0xA0
+    ptp4lOpts: -2 -s --summary_interval -4
+  recommend:
+  - match:
+    - nodeLabel: ptp/slave
+    priority: 4
+    profile: slave
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: sriov-nw-cu-cp-numa0-bh
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam: |
+    {
+    }
+  networkNamespace: site-cu-cp-network-namespace
+  resourceName: cu_cp_bh_n0
+  vlan: 142
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: sriov-nw-cu-cp-numa0-mh
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam: |
+    {
+    }
+  networkNamespace: site-cu-cp-network-namespace
+  resourceName: cu_cp_mh_n0
+  vlan: 101
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: sriov-nw-cu-cp-numa1-bh
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam: |
+    {
+    }
+  networkNamespace: site-cu-cp-network-namespace
+  resourceName: cu_cp_bh_n1
+  vlan: 142
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetwork
+metadata:
+  name: sriov-nw-cu-cp-numa1-mh
+  namespace: openshift-sriov-network-operator
+spec:
+  ipam: |
+    {
+    }
+  networkNamespace: site-cu-cp-network-namespace
+  resourceName: cu_cp_mh_n1
+  vlan: 101
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: sriov-nnp-cu-cp-numa0-bh
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+    pfNames:
+    - ens1f0
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-cp: ""
+  numVfs: 5
+  priority: 10
+  resourceName: cu_cp_bh_n0
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: sriov-nnp-cu-cp-numa0-mh
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+    pfNames:
+    - ens1f1
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-cp: ""
+  numVfs: 5
+  priority: 10
+  resourceName: cu_cp_mh_n0
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: sriov-nnp-cu-cp-numa1-bh
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+    pfNames:
+    - ens3f0
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-cp: ""
+  numVfs: 5
+  priority: 10
+  resourceName: cu_cp_bh_n1
+---
+apiVersion: sriovnetwork.openshift.io/v1
+kind: SriovNetworkNodePolicy
+metadata:
+  name: sriov-nnp-cu-cp-numa1-mh
+  namespace: openshift-sriov-network-operator
+spec:
+  deviceType: vfio-pci
+  isRdma: false
+  nicSelector:
+    pfNames:
+    - ens3f1
+  nodeSelector:
+    node-role.kubernetes.io/worker-cu-cp: ""
+  numVfs: 5
+  priority: 10
+  resourceName: cu_cp_mh_n1
+```
+
+
 
 # Prerequisites
 
