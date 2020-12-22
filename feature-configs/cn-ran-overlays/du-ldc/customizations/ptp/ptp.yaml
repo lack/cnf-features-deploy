@@ -9,7 +9,7 @@
 # Replace the value below to match your hardware
 - op: replace
   path: /spec/profile/0/interface
-  value: "ens5f0"
+  value: "ens1f0"
 
 - op: replace
   path: /metadata

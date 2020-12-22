@@ -12,7 +12,7 @@ spec:
   isRdma: false
   nicSelector:
 # The exact physical function name must match the hardware used    
-    pfNames: ["ens5f0"]
+    pfNames: ["ens1f0"]
   nodeSelector:
     node-role.kubernetes.io/worker-du-fec: ""
   # numVfs: 1
