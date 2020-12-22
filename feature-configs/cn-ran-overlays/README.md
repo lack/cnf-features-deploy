@@ -73,19 +73,78 @@ This means that the cluster we are deploying will have at least the following wo
 
 ## The manifest structure
 
-The manifest structure follows the deployment model described above. The [basic-profile](./basic-profile) folder contalins the performance and PTP profiles and references the operator deployments in the project' [`deploy`](../feature-configs/deploy) folder.
+The manifest structure follows the deployment model, and allows deployment and configuration of the machine types described above.
+### Folder tree
 
-The [`cu-up`](./cu-up),  [`du-fec`](du-fec) and [`du-ldc`](du-ldc) folders contain node type specific customizations. The number of node type specific folders can be increased to fit the particular deployment. 
+── common
+│   ├── basic-profile
+│   └── patches
+├── cu-up
+│   ├── customizations
+│   └── networks
+├── du-fec
+│   ├── customizations
+│   └── networks
+├── du-ldc
+│   ├── customizations
+│   └── networks
+├── images
+└── utils
+    └── mcp
 
-### Scaling
 
-This structure can be scaled to accommodate more worker node types, however the assumption is that all the nodes performing the same function in a particular cluster will be identical in terms of the hardware used and the VLAN tags. If this is not the case, SR-IOV network node selectors may be separated from PTP, PAO and machineconfig patches node selectors.
+### common
+The [common](./common) folder contains [basic-profile](./common/basic-profile) and [patches](./common/patches) folders.
+The [basic-profile](./common/basic-profile) folder contalins the performance and PTP profiles and references the operator deployments in the project' [`deploy`](../feature-configs/deploy) folder. The [basic-profile](./common/basic-profile) `kustomization.yaml` file links to the superset of the operator deployments without taking into account the unit types to be deployed on the cluster. The downside of this arrangement is that PTP operator will be installed on the clusters that do not contain distributed units. However, since PTP configuration is deployed using node selectors, no harm is done. from another side this allows to configure the operator deployment in a single file([kustomization.yaml](./common/basic-profile/kustomization.yaml))
+The [patches](./common/patches) folder contains temporary patches that must be applied for the configuration to function properly. The patches are linked only by the specific unit types and allow temporary workarounds to problems being discovered in the formal versions.
 
+
+### Unit type examples
+The [`cu-up`](./cu-up),  [`du-fec`](du-fec) and [`du-ldc`](du-ldc) folders contain node type specific customizations. The number of node type specific folders can be increased to fit the particular deployment (see [Scaling](#scaling))
+Each unit type folder contains two folders: `customizations` and `networks`.
+The `customizations` folder contalns patches applied on top of the basic profile for the specific hardware used, as well as links to the patches relevant for the specific unit type. For example, here is the patches applied on the basic performance profile to suit du-fec:
+
+```yml
+- op: replace
+  path: /metadata
+  value:
+    name: perf-du-fec
+
+# Handled by kernel-patch customization
+# - op: replace
+#   path: /spec/realTimeKernel/enabled
+#   value: true
+
+- op: add
+  path: /spec/additionalKernelArgs
+  value: [ nosmt ]
+  
+# Accommodate one NUMA node
+- op: replace
+  path: /spec/cpu/isolated
+  value: "2-25"
+
+- op: replace
+  path: /spec/nodeSelector
+  value:
+    node-role.kubernetes.io/worker-du-fec: ""
+```
+
+### images
+Contains bitmaps used in this `README.md`
+
+### utils
+Contains `clone.sh` file (see [Scaling](#scaling)) and `mcp` folder with sample machine config pool definitions (see [Prerequisites](#mcp))
+
+## <a name="scaling"></a>Scaling
+This structure can be easily scaled to accommodate more worker node types, however the assumption is that all the nodes performing the same function in a particular cluster will be identical in terms of the hardware used and the VLAN tags. If there is a need to create a new node type (due to a different hardware or a different network configuration), [clone.sh](./utils/clone.sh) comes to the rescue.
+Let's create a CU-CP machine type for our cluster. 
+ 
 
 # Prerequisites
 
 
-## 1. Create machine config pools for the RAN worker nodes. 
+## 1. <a name="mcp"></a>Create machine config pools for the RAN worker nodes. 
 
 ### DU-FEC worker example:
 
