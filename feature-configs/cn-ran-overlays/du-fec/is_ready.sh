@@ -2,7 +2,7 @@
 #
 # Check DU-LDC deployment / configuration are complete
 
-FLAVOR="-du-ldc"
+FLAVOR="-du-fec"
 ROLE="worker$FLAVOR"
 
 ####################################################
