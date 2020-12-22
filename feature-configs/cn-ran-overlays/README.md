@@ -299,7 +299,7 @@ Deployment and configuration of the profile can take a long time.
 Each node type folder contains `is_redy.sh` script, that can be used to determine the node readiness, as follows:
 
 ```bash
-cd feature-configs/cn-ran-overlay/du-ldc
+cd feature-configs/cn-ran-overlays/du-ldc
 while [ : ]; do ./is_ready.sh; if [[ $? == 0 ]]; then break; fi; sleep 300; done
 ```
 
