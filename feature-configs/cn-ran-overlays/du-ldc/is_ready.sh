@@ -2,8 +2,8 @@
 #
 # Check DU-LDC deployment / configuration are complete
 
-CONFIGURATION="du-ldc"
-ROLE="worker-$CONFIGURATION"
+CONFIGURATION="-du-ldc"
+ROLE="worker$CONFIGURATION"
 
 ####################################################
 # Checks whether the machine config pool contains a 
@@ -36,12 +36,12 @@ function abort ()
 }
 
 # Check machine config modules have been picked by MCO
-is_mcp_ready "load-sctp-module-$CONFIGURATION"
-is_mcp_ready "disable-chronyd-$CONFIGURATION"
-is_mcp_ready "performance-perf-$CONFIGURATION"
+is_mcp_ready "load-sctp-module$CONFIGURATION"
+is_mcp_ready "disable-chronyd$CONFIGURATION"
+is_mcp_ready "performance-perf$CONFIGURATION"
 
 # Check kernel patch daemonset has been scheduled on all applicable nodes
-DS_MISS=$(oc get ds/rtos-$CONFIGURATION-ds -o \
+DS_MISS=$(oc get ds/rtos$CONFIGURATION-ds -o \
     jsonpath='{.status.numberMisscheduled}')
 if [[ ${DS_MISS} -gt 0 ]]; then
     abort "Kernel patch daemonset is not updated yet"
