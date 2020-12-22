@@ -293,3 +293,13 @@ This project contains makefile based tooling, that can be used as follows (from 
 
 This will deploy du-ldc and cu-up (any number of configurations can be set in the `FEATURES`)
 
+## is_ready.sh
+
+Deployment and configuration of the profile can take a long time.
+Each node type folder contains `is_redy.sh` script, that can be used to determine the node readiness, as follows:
+
+```bash
+cd feature-configs/cn-ran-overlay/du-ldc
+while [ : ]; do ./is_ready.sh; if [[ $? == 0 ]]; then break; fi; sleep 300; done
+```
+
