@@ -2,7 +2,7 @@
 #
 # Check DU-LDC deployment / configuration are complete
 
-FLAVOR="-du-ldc"
+FLAVOR="-cu-up"
 ROLE="worker$FLAVOR"
 
 ####################################################
@@ -61,31 +61,7 @@ function main ()
     # Check machine config modules have been picked by MCO
     is_mcp_ready "load-sctp-module$FLAVOR"
     
-    # TODO: Remove when integrated into PTP operator
-    is_mcp_ready "disable-chronyd$FLAVOR"
-    
     is_mcp_ready "performance-perf$FLAVOR"
-
-    # Check kernel patch daemonset has been scheduled on 
-    # all applicable nodes
-    # TODO - remove when RT kernel patch is removed
-    DS_MISS=$(oc -n default get ds/rtos$FLAVOR-ds -o \
-        jsonpath='{.status.numberMisscheduled}')
-    if [[ ${DS_MISS} -gt 0 ]]; then
-        abort "Kernel patch daemonset is not updated yet"
-    fi
-    
-    # TODO - remove when RT kernel patch is removed
-    # Check hernel has been patched on all machines
-    LST_KERNELS=$(oc get no -l node-role.kubernetes.io/$ROLE="" -o json \
-        |grep '"kernelVersion": ')
-    IFS=,
-    for value in $LST_KERNELS;
-    do
-        if [[ -z $(echo $value |grep rt) ]]; then
-        abort "Kernel has not been patched yet on all machines"
-        fi
-    done
 
     # Check MCP is updated
     oc wait mcp/$ROLE --for condition=updated --timeout 1s

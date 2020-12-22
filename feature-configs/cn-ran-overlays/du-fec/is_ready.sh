@@ -39,7 +39,7 @@ function is_mcp_ready ()
 function abort ()
 {
     if [[ -n "${VERBOSE}" ]]; then
-            echo "$1"
+        echo "$1"
     fi
     exit 1
 }
