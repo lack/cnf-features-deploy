@@ -1,25 +1,12 @@
-- op: replace
-  path: /spec/recommend/0/profile
-  value: "ptp-du-fec"   
-
-- op: replace
-  path: /spec/profile/0/name
-  value: "ptp-du-fec"
-
 # Replace the value below to match your hardware
 - op: replace
   path: /spec/profile/0/interface
   value: "ens1f0"
 
 - op: replace
-  path: /metadata
-  value:
-    name: ptp-du-fec
+  path: /metadata/name
+  value: ptp-du-ldc
 
 - op: replace
-  path: /spec/recommend/0/match/0
-  value:
-    nodeLabel: "node-role.kubernetes.io/worker-du-fec"
-
-
-  
+  path: /spec/recommend/0/match/0/nodeLabel
+  value: "node-role.kubernetes.io/worker-du-ldc"
