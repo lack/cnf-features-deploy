@@ -153,6 +153,9 @@ The resulting profile can be seen as follows:
 [user@host utils]$ /tmp/kustomize build ../cu-up
 ```
 
+# Hardware requirements
+The profile must be deployed on bare metal worker nodes with SR-IOV capable NICs. The NIC designated for PTP must support hatdware timestamping.
+
 
 # Deployment Prerequisites
 
