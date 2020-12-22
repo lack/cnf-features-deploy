@@ -26,11 +26,10 @@ find $1/$3 -type f -exec sed -i -e 's/$2/$3/g' {} +
 find $1/$3 -type f -exec sed -i -e 's/$NR_FROM/$NR_TO/g' {} +
 
 RN_FILES=$(find $1/$3 -type f -name *$2*)
-echo $RN_FILES
 for f in $RN_FILES; do 
   PN=$(dirname $f)
   FN=$(basename $f)
   NEW_FN=$(echo $FN | sed -e s/$2/$3/)
-  echo $NEW_FN
+  mv $f $PN/$NEW_FN
 done
 
