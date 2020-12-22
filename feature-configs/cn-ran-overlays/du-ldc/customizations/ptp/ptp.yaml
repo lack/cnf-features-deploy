@@ -1,10 +1,10 @@
-- op: replace
-  path: /spec/recommend/0/profile
-  value: "ptp-du-ldc"   
+# - op: replace
+#   path: /spec/recommend/0/profile
+#   value: "ptp-du-ldc"   
 
-- op: replace
-  path: /spec/profile/0/name
-  value: "ptp-du-ldc"
+# - op: replace
+#   path: /spec/profile/0/name
+#   value: "ptp-du-ldc"
 
 # Replace the value below to match your hardware
 - op: replace
