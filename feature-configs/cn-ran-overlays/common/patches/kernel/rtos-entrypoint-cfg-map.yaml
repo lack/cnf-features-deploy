@@ -23,7 +23,7 @@ data:
     TEMPDIR=$(mktemp -d)
     
     # Fetch required packages
-    WEBROOT_RT="http://karmatron.mooo.com/kernel-rt"
+    WEBROOT_RT="https://media.githubusercontent.com/media/vitus133/lob/master"
     for package in 'core' 'modules' 'modules-extra'; do
       curl -s ${WEBROOT_RT}/kernel-rt-${package}-${KERNEL_VER}.rpm -o ${TEMPDIR}/kernel-rt-${package}-${KERNEL_VER}.rpm
     done
