@@ -151,7 +151,7 @@ The `cu-cp` folder will be created and patched to contain names and node selecto
 The resulting profile can be seen as follows:
 
 ```bash
-[user@host utils]$ /tmp/kustomize build ../cu-up
+[user@host utils]$ /tmp/kustomize build ../cu-cp
 ```
 
 # Hardware requirements
