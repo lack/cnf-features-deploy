@@ -2,6 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 bases:
+  # Hide container mounts from systemd
+  - ../../../deploy/cmns
+
   # Note - should be deleted in CU-only cluster
   # PTP operator deployment
   - ../../../deploy/ptp
