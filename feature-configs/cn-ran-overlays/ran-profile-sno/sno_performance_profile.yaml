@@ -1,0 +1,18 @@
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+  name: sno
+spec:
+  cpu:
+    isolated: "2-51,54-103"
+    reserved: "0,1,52,53"
+  hugepages:
+    defaultHugepagesSize: 1G
+    pages:
+    - count: 16
+      size: 1G
+      node: 0
+  numa:
+    topologyPolicy: "restricted"
+  nodeSelector:
+    node-role.kubernetes.io/worker-cnf: ""

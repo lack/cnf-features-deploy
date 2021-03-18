@@ -3,7 +3,5 @@ kind: Kustomization
 
 bases:
   - ../ran-profile-base
-  - cluster-config
-  - site.1.fqdn
-
-
+resources:
+  - ./sno_performance_profile.yaml
