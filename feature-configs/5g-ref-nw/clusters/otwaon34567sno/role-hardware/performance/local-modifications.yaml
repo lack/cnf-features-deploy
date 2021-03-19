@@ -1,6 +1,12 @@
-kind: PerformanceProfile
-metadata:
-  name: perf-du-single
-spec:
-  nodeSelector:
+- op: add
+  path: /spec/nodeSelector
+  value:
     node-role.kubernetes.io/master: ""
+- op: replace
+  path: /spec/cpu/isolated
+  value: "2-51,54-103"
+- op: replace
+  path: /spec/cpu/reserved
+  value: "0-1,52,53"
+- op: remove
+  path: /spec/additionalKernelArgs
