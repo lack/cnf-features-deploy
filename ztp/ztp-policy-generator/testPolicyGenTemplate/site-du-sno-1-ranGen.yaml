@@ -24,7 +24,7 @@ spec:
         deviceType: netdevice
         isRdma: true
         nicSelector:
-          pfNames: ["ens5f0"]
+          pfNames: ["ens1f0"]
         numVfs: 8
         priority: 10
         resourceName: du_fh
@@ -43,7 +43,7 @@ spec:
         deviceType: vfio-pci
         isRdma: false
         nicSelector:
-          pfNames: ["ens7f0"]
+          pfNames: ["ens3f0"]
         numVfs: 8
         priority: 10
         resourceName: du_mh
@@ -53,8 +53,8 @@ spec:
         name: openshift-node-performance-profile
       spec:
         cpu:
-          isolated: "2-19,22-39"
-          reserved: "0-1,20-21"
+          isolated: "2-51,54-103"
+          reserved: "0-1,52-53"
         hugepages:
           defaultHugepagesSize: 1G
           pages:
@@ -70,7 +70,7 @@ spec:
               summary=Configuration changes profile inherited from performance created tuned
               include=openshift-node-performance-openshift-node-performance-profile
               [bootloader]
-              cmdline_crash=nohz_full=2-19,22-39
+              cmdline_crash=nohz_full=2-51,54-103
               [sysctl]
               kernel.timer_migration=1
               [service]
