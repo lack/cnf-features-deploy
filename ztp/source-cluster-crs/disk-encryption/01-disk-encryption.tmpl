@@ -1,4 +1,4 @@
-{{ if eq .Type "tpm2" "nbde" -}}
+{{ if eq .Type "tpm2" "nbde" "combined" -}}
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig
 metadata:
@@ -20,6 +20,13 @@ spec:
               - url: "{{ .URL }}"
                 thumbprint: "{{ .Thumbprint }}"
             {{- end }}
+          {{- else if eq .Type "combined" }}
+            custom:
+              config: '{"t":2,"pins":{"tpm2":[{}],"sss":[{"t":1,"pins":{"tang":
+              {{- toJson .Tang -}}
+              }}]}}'
+              needsNetwork: true
+              pin: "sss"
           {{- end }}
           options: [--cipher, aes-cbc-essiv:sha256]
           wipeVolume: true
@@ -28,7 +35,7 @@ spec:
           format: xfs
           wipeFilesystem: true
           label: root 
-  {{- if eq .Type "nbde" }}
+  {{- if eq .Type "nbde" "combined" }}
     kernelArguments:
       - rt.neednet=1
   {{- end }}

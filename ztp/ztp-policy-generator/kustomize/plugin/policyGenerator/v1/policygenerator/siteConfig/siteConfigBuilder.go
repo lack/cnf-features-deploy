@@ -3,6 +3,7 @@ package siteConfig
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"io"
 	"path/filepath"
 	"reflect"
@@ -17,6 +18,7 @@ import (
 type SiteConfigBuilder struct {
 	fHandler         *utils.FilesHandler
 	SourceClusterCRs []interface{}
+	templateFuncs    template.FuncMap
 }
 
 func NewSiteConfigBuilder(fileHandler *utils.FilesHandler) *SiteConfigBuilder {
@@ -35,6 +37,12 @@ func NewSiteConfigBuilder(fileHandler *utils.FilesHandler) *SiteConfigBuilder {
 			panic(err)
 		}
 		scBuilder.SourceClusterCRs[id] = clusterCR
+	}
+	scBuilder.templateFuncs = template.FuncMap{
+		"toJson": func(i interface{}) (string, error) {
+			b, err := json.Marshal(i)
+			return string(b), err
+		},
 	}
 
 	return &scBuilder
@@ -164,7 +172,7 @@ func (scbuilder *SiteConfigBuilder) getMountNsManifest() (string, interface{}) {
 func (scbuilder *SiteConfigBuilder) getManifestFromTemplate(templatePath string, data interface{}) (string, interface{}) {
 	baseName := filepath.Base(templatePath)
 	tStr := scbuilder.fHandler.ReadSourceFileCR(templatePath)
-	t, err := template.New(baseName).Parse(string(tStr))
+	t, err := template.New(baseName).Funcs(scbuilder.templateFuncs).Parse(string(tStr))
 	if err != nil {
 		return "", nil
 	}
