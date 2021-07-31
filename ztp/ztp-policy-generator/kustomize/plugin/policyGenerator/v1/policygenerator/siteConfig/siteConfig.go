@@ -16,6 +16,7 @@ const workloadKubeletFile = "kubelet.conf"
 const cpuset = "$cpuset"
 const mountNSPath = "mount-ns"
 const mountNSFile = "01-container-mount-ns.yaml"
+const diskEncryptionFile = "disk-encryption/01-disk-encryption.tmpl"
 
 var Separator = []byte("---\n")
 
@@ -103,6 +104,17 @@ type Clusters struct {
 	ClusterLabels          map[string]string `yaml:"clusterLabels"`
 	ClusterNetwork         []ClusterNetwork  `yaml:"clusterNetwork"`
 	IgnitionConfigOverride string            `yaml:"ignitionConfigOverride"`
+	DiskEncryption         DiskEncryption    `yaml:"diskEncryption"`
+}
+
+type DiskEncryption struct {
+	Type string       `yaml:"type"`
+	Tang []TangConfig `yaml:"tang"`
+}
+
+type TangConfig struct {
+	URL        string `yaml:"url" json:"url"`
+	Thumbprint string `yaml:"thumbprint" json:"thp"`
 }
 
 // Nodes

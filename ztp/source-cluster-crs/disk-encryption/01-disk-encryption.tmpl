@@ -1,0 +1,35 @@
+{{ if eq .Type "tpm2" "nbde" -}}
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: disk-encryption
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+    storage:
+      luks:
+        - name: root
+          device: /dev/disk/by-partlabel/root
+          clevis:
+          {{- if eq .Type "tpm2" }}
+            tpm2: true
+          {{- else if eq .Type "nbde" }}
+            tang:
+            {{- range .Tang }}
+              - url: "{{ .URL }}"
+                thumbprint: "{{ .Thumbprint }}"
+            {{- end }}
+          {{- end }}
+          options: [--cipher, aes-cbc-essiv:sha256]
+          wipeVolume: true
+      filesystems:
+        - device: /dev/mapper/root
+          format: xfs
+          wipeFilesystem: true
+          label: root 
+  {{- if eq .Type "nbde" }}
+    kernelArguments:
+      - rt.neednet=1
+  {{- end }}
+{{- end }}

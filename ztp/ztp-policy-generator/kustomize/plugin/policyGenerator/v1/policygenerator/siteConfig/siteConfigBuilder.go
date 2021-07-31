@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"encoding/base64"
 	"io"
+	"path/filepath"
 	"reflect"
 	"strings"
+	"text/template"
+	"unicode"
 
 	utils "github.com/openshift-kni/cnf-features-deploy/ztp/ztp-policy-generator/kustomize/plugin/policyGenerator/v1/policygenerator/utils"
 	yaml "gopkg.in/yaml.v3"
@@ -96,6 +99,10 @@ func (scbuilder *SiteConfigBuilder) getClusterCR(clusterId int, siteConfigTemp S
 		dataMap[operatorGroups] = operatorGroupsValue
 		mountNS, mountNSValue := scbuilder.getMountNsManifest()
 		dataMap[mountNS] = mountNSValue
+		diskEncryption, diskEncryptionValue := scbuilder.getManifestFromTemplate(diskEncryptionFile, siteConfigTemp.Spec.Clusters[0].DiskEncryption)
+		if diskEncryptionValue != nil {
+			dataMap[diskEncryption] = diskEncryptionValue
+		}
 		mapIntf["data"] = dataMap
 	}
 
@@ -152,6 +159,28 @@ func (scbuilder *SiteConfigBuilder) getMountNsManifest() (string, interface{}) {
 	mountNStr := string(mountNS)
 
 	return mountNSFile, reflect.ValueOf(mountNStr).Interface()
+}
+
+func (scbuilder *SiteConfigBuilder) getManifestFromTemplate(templatePath string, data interface{}) (string, interface{}) {
+	baseName := filepath.Base(templatePath)
+	tStr := scbuilder.fHandler.ReadSourceFileCR(templatePath)
+	t, err := template.New(baseName).Parse(string(tStr))
+	if err != nil {
+		return "", nil
+	}
+	var output bytes.Buffer
+	err = t.Execute(&output, data)
+	if err != nil {
+		return "", nil
+	}
+	// Ensure there's non-whitespace content
+	for _, r := range output.String() {
+		if unicode.IsSymbol(r) {
+			return baseName, reflect.ValueOf(output.String()).Interface()
+		}
+	}
+	// Output is all whitespace; return nil instead
+	return "", nil
 }
 
 func (scbuilder *SiteConfigBuilder) splitYamls(yamls []byte) ([][]byte, error) {
