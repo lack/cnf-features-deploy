@@ -1,4 +1,4 @@
-{{ if eq .Data.Type "tpm2" "nbde" -}}
+{{ if eq .Data.Type "tpm2" "nbde" "tpm2+nbde" -}}
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig
 metadata:
@@ -22,6 +22,17 @@ spec:
                 - url: "{{ .URL }}"
                   thumbprint: "{{ .Thumbprint }}"
             {{- end }}
+          {{- else if eq .Data.Type "tpm2+nbde" }}
+            custom:
+              pin: "sss"
+              needsNetwork: true
+              config: '{"t":2,"pins":{"tpm2":[{}],"sss":[{"t":1,"pins":{"tang":[
+              {{- $delim := "" -}}
+              {{- range .Data.Tang -}}
+                {{ $delim }}{"url":"{{ .URL }}","thp":"{{ .Thumbprint }}"}
+                {{- if not $delim -}}{{- $delim = "," -}}{{- end -}}
+              {{- end -}}
+              ]}}]}}'
           {{- end }}
           options: [--cipher, aes-cbc-essiv:sha256]
           wipeVolume: true
@@ -30,7 +41,7 @@ spec:
           format: xfs
           wipeFilesystem: true
           label: root 
-  {{- if eq .Data.Type "nbde" }}
+  {{- if eq .Data.Type "nbde" "tpm2+nbde" }}
     kernelArguments:
       - rt.neednet=1
   {{- end }}

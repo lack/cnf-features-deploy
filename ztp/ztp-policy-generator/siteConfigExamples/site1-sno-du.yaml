@@ -33,7 +33,7 @@ spec:
       - 10.16.231.22
     ignitionConfigOverride: "igen"
     diskEncryption:
-      type: "nbde"
+      type: "tpm2+nbde"
       tang:
         - url: "http://10.0.0.1:7500"
           thumbprint: "1234567890"

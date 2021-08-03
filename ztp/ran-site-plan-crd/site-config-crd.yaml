@@ -181,6 +181,7 @@ spec:
                               - none
                               - tpm2
                               - nbde
+                              - tpm2+nbde
                           tang:
                             description: NBDE Tang server descriptions
                             type: array
