@@ -1,4 +1,4 @@
-{{ if eq .Data.Type "nbde" -}}
+{{ if eq .Data.Type "tpm2" "nbde" -}}
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig
 metadata:
@@ -14,11 +14,15 @@ spec:
         - name: root
           device: /dev/disk/by-partlabel/root
           clevis:
+          {{- if eq .Data.Type "tpm2" }}
+            tpm2: true
+          {{- else if eq .Data.Type "nbde" }}
             tang:
             {{- range .Data.Tang }}
                 - url: "{{ .URL }}"
                   thumbprint: "{{ .Thumbprint }}"
             {{- end }}
+          {{- end }}
           options: [--cipher, aes-cbc-essiv:sha256]
           wipeVolume: true
       filesystems:
@@ -26,6 +30,8 @@ spec:
           format: xfs
           wipeFilesystem: true
           label: root 
+  {{- if eq .Data.Type "nbde" }}
     kernelArguments:
       - rt.neednet=1
+  {{- end }}
 {{- end }}

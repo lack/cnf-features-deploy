@@ -179,6 +179,7 @@ spec:
                             default: none
                             enum:
                               - none
+                              - tpm2
                               - nbde
                           tang:
                             description: NBDE Tang server descriptions
