@@ -1,4 +1,4 @@
-{{ with .Data.DiskEncryption }}{{ if eq .Type "nbde" -}}
+{{ with .Data.DiskEncryption }}{{ if eq .Type "tpm2" "nbde" -}}
 apiVersion: machineconfiguration.openshift.io/v1
 kind: MachineConfig
 metadata:
@@ -14,18 +14,23 @@ spec:
         - name: root
           device: /dev/disk/by-partlabel/root
           clevis:
+          {{- if eq .Type "tpm2" }}
+            tpm2: true
+          {{- else if eq .Type "nbde" }}
             tang:
             {{- range .Tang }}
                 - url: "{{ .URL }}"
                   thumbprint: "{{ .Thumbprint }}"
             {{- end }}
+          {{- end }}
           options: [--cipher, aes-cbc-essiv:sha256]
           wipeVolume: true
       filesystems:
         - device: /dev/mapper/root
           format: xfs
           wipeFilesystem: true
-          label: root
+          label: root 
+  {{- if eq .Type "nbde" }}
     systemd:
       units:
         - name: "initramfs-network-config-sync.service"
@@ -43,4 +48,5 @@ spec:
             WantedBy=default.target
     kernelArguments:
       - rd.neednet=1
+  {{- end }}
 {{- end }}{{ end }}
