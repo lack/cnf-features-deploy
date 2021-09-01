@@ -9,33 +9,33 @@ spec:
   sourceFiles:
     # Create operators policies that will be installed in all clusters
     - fileName: SriovSubscription.yaml
-      policyName: "sriov-sub-policy"
+      policyName: ""
     - fileName: SriovSubscriptionNS.yaml
-      policyName: "sriov-sub-policy"
+      policyName: ""
     - fileName: SriovSubscriptionOperGroup.yaml
-      policyName: "sriov-sub-policy"
+      policyName: ""
     - fileName: PtpSubscription.yaml
-      policyName: "ptp-sub-policy"
+      policyName: ""
     - fileName: PtpSubscriptionNS.yaml
-      policyName: "ptp-sub-policy"
+      policyName: ""
     - fileName: PtpSubscriptionOperGroup.yaml
-      policyName: "ptp-sub-policy"
+      policyName: ""
     - fileName: PaoSubscription.yaml
-      policyName: "pao-sub-policy"
+      policyName: ""
       spec:
       # Changing the channel value will upgrade/downgrade the operator installed version.
         channel: "4.8"
     - fileName: PaoSubscriptionNS.yaml
-      policyName: "pao-sub-policy"
+      policyName: ""
     - fileName: PaoSubscriptionOperGroup.yaml
-      policyName: "pao-sub-policy"
+      policyName: ""
     - fileName: PaoSubscriptionCatalogSource.yaml
-      policyName: "pao-sub-policy"
+      policyName: ""
     - fileName: ClusterLogOperGroup.yaml
-      policyName: "log-sub-policy"
+      policyName: ""
     - fileName: ClusterLogSubscription.yaml
-      policyName: "log-sub-policy"
+      policyName: ""
     - fileName: StorageSubscription.yaml
-      policyName: "storage-sub-policy"
+      policyName: ""
     - fileName: ReduceMonitoringFootprint.yaml
-      policyName: "mon-offload-policy"
+      policyName: ""

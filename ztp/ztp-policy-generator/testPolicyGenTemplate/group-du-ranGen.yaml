@@ -10,4 +10,4 @@ spec:
     group-du: ""
   sourceFiles:
     - fileName: MachineConfigPool.yaml
-      policyName: "mcp-worker-du-policy"
+      policyName: ""
