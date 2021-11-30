@@ -8,13 +8,13 @@ subdirectory follows the following conventions:
 - The name of the directory corresponds to the rendered filename, such
   that a directory called `MachineConfigFoo` will be rendered into
   `../source-crs/MachineConfigFoo.yaml`
-- The directory must contain a `build.sh` which produces to stdout the
-  rendered yaml identically every time it is called, provided that the
-  input files remain the same (it must not include any date stamps or
-  git commit hashes).  This is used both to generate the rendered
-  `../source-crs/*.yaml` and to do an integrity check as part of the ci-job
-  target which ensures the rendered yaml stays in-sync with the source
-  content.
+- The directory must contain a `build.sh` which is run with $MCPROLE set to the
+  expected MCP role to produce.  This script produces to stdout the rendered
+  yaml identically every time it is called, provided that the input files
+  remain the same (it must not include any date stamps or git commit hashes).
+  This is used both to generate the rendered `../source-crs/*.yaml` and to do
+  an integrity check as part of the ci-job target which ensures the rendered
+  yaml stays in-sync with the source content.
 - The directory may contain a `test.sh` which can additionally perform
   any unit test operations on the contents of the directory.
 
