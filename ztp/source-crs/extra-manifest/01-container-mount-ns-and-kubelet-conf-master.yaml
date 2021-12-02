@@ -40,34 +40,74 @@ spec:
         name: container-mount-namespace.service
       - dropins:
         - contents: |
-            [Unit]
-            Wants=container-mount-namespace.service
-            After=container-mount-namespace.service
+            # This generic drop-in allows adding additional executable wrappers to
+            # ExecStart via the EXECSTART_WRAPPER environment variable, and extra arguments
+            # to be added via EXECSTART_WRAPPER_EXTRA_ARGS
 
             [Service]
             ExecStartPre=/usr/local/bin/extractExecStart %n /%t/%N-execstart.env ORIG_EXECSTART
             EnvironmentFile=-/%t/%N-execstart.env
             ExecStart=
-            ExecStart=bash -c "nsenter --mount=%t/container-mount-namespace/mnt \
-                ${ORIG_EXECSTART}"
-          name: 20-container-mount-namespace.conf
+            ExecStart=bash -c "${EXECSTART_WRAPPER} \
+                ${ORIG_EXECSTART} \
+                ${EXECSTART_WRAPPER_EXTRA_ARGS}"
+          name: 99-execstart-wrapper.conf
+        - contents: |
+            # This works in conjunction with 99-execstart-wrapper.conf to wrap the
+            # executable in 'nsenter' so it runs in the container-private mount namespace
+            # pinned by the 'container-mount-namespace.service' job.
+
+            [Unit]
+            Wants=container-mount-namespace.service
+            After=container-mount-namespace.service
+
+            [Service]
+            Environment="EXECSTART_WRAPPER=nsenter --mount=%t/container-mount-namespace/mnt"
+          name: 20-container-mount-namespace-wrapper.conf
+        - contents: |
+            # Addresses a collision in the way both 99-execstart-wrapper.conf and
+            # 20-stream-address.conf patch ExecStart=, basically by redoing what
+            # 20-stream-address.conf does using the EXECSTART_WRAPPER_EXTRA_ARGS environment facility provided by
+            # 99-execstart-wrapper.conf, which is the exclusive patcher for ExecStart=
+
+            [Service]
+            Environment="EXECSTART_WRAPPER_EXTRA_ARGS=--stream-address=$CONTAINER_STREAM_ADDRESS"
+          name: 30-crio-stream-address-env.conf
         name: crio.service
       - dropins:
         - contents: |
-            [Unit]
-            Wants=container-mount-namespace.service
-            After=container-mount-namespace.service
+            # This generic drop-in allows adding additional executable wrappers to
+            # ExecStart via the EXECSTART_WRAPPER environment variable, and extra arguments
+            # to be added via EXECSTART_WRAPPER_EXTRA_ARGS
 
             [Service]
             ExecStartPre=/usr/local/bin/extractExecStart %n /%t/%N-execstart.env ORIG_EXECSTART
             EnvironmentFile=-/%t/%N-execstart.env
             ExecStart=
-            ExecStart=bash -c "nsenter --mount=%t/container-mount-namespace/mnt \
-                ${ORIG_EXECSTART} --housekeeping-interval=30s"
-          name: 20-container-mount-namespace.conf
+            ExecStart=bash -c "${EXECSTART_WRAPPER} \
+                ${ORIG_EXECSTART} \
+                ${EXECSTART_WRAPPER_EXTRA_ARGS}"
+          name: 99-execstart-wrapper.conf
         - contents: |
+            # This works in conjunction with 99-execstart-wrapper.conf to wrap the
+            # executable in 'nsenter' so it runs in the container-private mount namespace
+            # pinned by the 'container-mount-namespace.service' job.
+
+            [Unit]
+            Wants=container-mount-namespace.service
+            After=container-mount-namespace.service
+
+            [Service]
+            Environment="EXECSTART_WRAPPER=nsenter --mount=%t/container-mount-namespace/mnt"
+          name: 20-container-mount-namespace-wrapper.conf
+        - contents: |
+            # Works in conjunction with the original kubelet.service environment and an
+            # additional override in 99-execstart-wrapper.conf to adjust all housekeeping
+            # intervals
+
             [Service]
             Environment="OPENSHIFT_MAX_HOUSEKEEPING_INTERVAL_DURATION=60s"
             Environment="OPENSHIFT_EVICTION_MONITORING_PERIOD_DURATION=30s"
+            Environment="EXECSTART_WRAPPER_EXTRA_ARGS=--housekeeping-interval=30s"
           name: 30-kubelet-interval-tuning.conf
         name: kubelet.service

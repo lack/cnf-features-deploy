@@ -17,6 +17,9 @@ ${MCMAKER} -name container-mount-namespace-and-kubelet-conf -mcp ${MCPROLE} -std
         file -source extractExecStart -path /usr/local/bin/extractExecStart -mode 0755 \
         file -source nsenterCmns -path /usr/local/bin/nsenterCmns -mode 0755 \
         unit -source container-mount-namespace.service \
-        dropin -source 20-container-mount-namespace.conf -for crio.service \
-        dropin -source 20-container-mount-namespace-kubelet.conf -name 20-container-mount-namespace.conf -for kubelet.service \
+        dropin -source 99-execstart-wrapper.conf -for crio.service \
+        dropin -source 20-container-mount-namespace-wrapper.conf -for crio.service \
+        dropin -source 30-crio-stream-address-env.conf -for crio.service \
+        dropin -source 99-execstart-wrapper.conf -for kubelet.service \
+        dropin -source 20-container-mount-namespace-wrapper.conf -for kubelet.service \
         dropin -source 30-kubelet-interval-tuning.conf -for kubelet.service
