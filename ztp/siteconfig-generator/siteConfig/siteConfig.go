@@ -104,6 +104,7 @@ type Clusters struct {
 	ProxySettings          ProxySettings     `yaml:"proxy,omitempty"`
 	ExtraManifestPath      string            `yaml:"extraManifestPath"`
 	ClusterImageSetNameRef string            `yaml:"clusterImageSetNameRef,omitempty"`
+	GeneratorOverrides     map[string]bool   `yaml:"generatorOverrides"`
 
 	NumMasters  uint8
 	NumWorkers  uint8

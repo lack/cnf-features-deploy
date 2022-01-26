@@ -99,10 +99,17 @@ func (scbuilder *SiteConfigBuilder) getClusterCRs(clusterId int, siteConfigTemp 
 
 	for _, cr := range scbuilder.SourceClusterCRs {
 		mapSourceCR := cr.(map[string]interface{})
+		kind := mapSourceCR["kind"].(string)
+		cluster := siteConfigTemp.Spec.Clusters[clusterId]
 
-		if mapSourceCR["kind"] == "ConfigMap" {
+		shouldExclude, hasRule := cluster.GeneratorOverrides[kind]
+		if hasRule || shouldExclude {
+			log.Printf("Excluding generation of %s", kind)
+			continue
+		}
+
+		if kind == "ConfigMap" {
 			dataMap := make(map[string]interface{})
-			cluster := siteConfigTemp.Spec.Clusters[clusterId]
 			dataMap, err := scbuilder.getExtraManifest(dataMap, cluster)
 			if err != nil {
 				// Will return and fail if the end user extra-manifest having issues.
@@ -131,7 +138,7 @@ func (scbuilder *SiteConfigBuilder) getClusterCRs(clusterId int, siteConfigTemp 
 				return clusterCRs, err
 			}
 			clusterCRs = append(clusterCRs, crValue)
-		} else if mapSourceCR["kind"] == "BareMetalHost" || mapSourceCR["kind"] == "NMStateConfig" {
+		} else if kind == "BareMetalHost" || kind == "NMStateConfig" {
 			for ndId := range siteConfigTemp.Spec.Clusters[clusterId].Nodes {
 				crValue, err := scbuilder.getClusterCR(clusterId, siteConfigTemp, mapSourceCR, ndId)
 				if err != nil {
