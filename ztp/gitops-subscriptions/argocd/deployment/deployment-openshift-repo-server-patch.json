@@ -16,9 +16,10 @@
             "terminationMessagePath": "/dev/termination-log",
             "name": "kustomize-plugin",
             "command": [
-              "/exportkustomize.sh"
+              "extract"
             ],
             "args": [
+              "/kustomize",
               "/.config"
             ],
             "imagePullPolicy": "Always",

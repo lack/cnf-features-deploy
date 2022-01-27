@@ -33,13 +33,3 @@ extract
 -------
 EOF
 extract --help
-
-cat <<EOF
-
-/extractKustomize.sh
--------------------
-
-Used by the ArgoCD deployment patching logic, this entrypoint copies
-the kustomize plugins for SiteConfig and PolicyGenTemplate and
-aupporting resources into the proper kustomize directory structure.
-EOF
