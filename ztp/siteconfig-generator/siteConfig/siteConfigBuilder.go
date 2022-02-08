@@ -250,8 +250,12 @@ func (scbuilder *SiteConfigBuilder) getClusterCR(clusterId int, siteConfigTemp S
 				return nil, err
 			}
 			valueIntf, err := siteConfigTemp.GetSiteConfigFieldValue(key, clusterId, nodeId)
-
-			if err == nil && valueIntf != nil && valueIntf != "" {
+			if err != nil {
+				return nil, fmt.Errorf("Could not resolve template value for %q: %w", key, err)
+			} else if valueIntf == nil {
+				return nil, fmt.Errorf("Could not resolve template value for %q: nil return value", key)
+			} else if !reflect.ValueOf(valueIntf).IsZero() {
+				// Do not add keys for empty (zero) values
 				mapIntf[k] = valueIntf
 			}
 		} else {

@@ -352,26 +352,23 @@ spec:
 		input:          `key: "{{ .Site.PullSecretRef }}"`,
 		expectedResult: ``,
 	}, {
-		// TODO: This should be an error, not a success that returns a nil map
-		what:           "Invalid Node template (no node ID provided)",
-		input:          `key: "{{ .Node.HostName }}"`,
-		nodeId:         -1,
-		expectedResult: ``,
+		what:          "Invalid Node template (no node ID provided)",
+		input:         `key: "{{ .Node.HostName }}"`,
+		nodeId:        -1,
+		expectedError: "Node ID out of range",
 	}, {
 		what:          "Unparsable key",
 		input:         `key: "{{ Good luck! }}"`,
 		nodeId:        -1,
 		expectedError: "could not be translated",
 	}, {
-		// TODO: This should be an error, not a success that returns a nil map
-		what:           "Invalid key (missing field)",
-		input:          `key: "{{ .Site.NoSuchKey }}"`,
-		expectedResult: ``,
+		what:          "Invalid key (missing field)",
+		input:         `key: "{{ .Site.NoSuchKey }}"`,
+		expectedError: "Could not find path",
 	}, {
-		// TODO: This should be an error, not a success that returns a nil map
-		what:           "Invalid key (going too deep on a leaf)",
-		input:          `key: "{{ .Node.HostName.Too.Deep }}"`,
-		expectedResult: ``,
+		what:          "Invalid key (going too deep on a leaf)",
+		input:         `key: "{{ .Node.HostName.Too.Deep }}"`,
+		expectedError: "only accepts structs",
 	}, {
 		what:           "Nested structure (no templates)",
 		input:          `top: { middle: { a: "value", b: 42} }`,
@@ -385,10 +382,9 @@ spec:
 		input:          `top: { a: "{{ .Cluster.ClusterLabels }}", middle: { bottom: "end" } }`,
 		expectedResult: `top: { a: {common: "true", "group-du-sno": "", "sites": "test-site"}, middle: { bottom: "end" } }`,
 	}, {
-		// TODO: This should be an error, not a success where the key is removed
-		what:           "Nested recursive structure with invalid key",
-		input:          `top: { middle: { bottom: "{{ .Cluster.NoSuchKey }}" } }`,
-		expectedResult: `top: { middle: {} }`,
+		what:          "Nested recursive structure with invalid key",
+		input:         `top: { middle: { bottom: "{{ .Cluster.NoSuchKey }}" } }`,
+		expectedError: "Could not find path",
 	}}
 
 	sc := SiteConfig{}

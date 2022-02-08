@@ -52,8 +52,8 @@ func (sc *SiteConfig) GetSiteConfigFieldValue(path string, clusterId int, nodeId
 		}
 	}
 
-	if !v.IsValid() || v.IsZero() {
-		return "", nil
+	if !v.IsValid() {
+		return nil, fmt.Errorf("Could not find path %q", path)
 	}
 
 	return v.Interface(), nil
