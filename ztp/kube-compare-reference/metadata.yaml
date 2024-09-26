@@ -167,7 +167,6 @@ parts:
 
 templateFunctionFiles:
   - validate_node_selector.tmpl
-  - optional_labels.tmpl
   - unordered_list.tmpl
 
 fieldsToOmit:
