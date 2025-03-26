@@ -1,7 +1,7 @@
 apiVersion: tuned.openshift.io/v1
 kind: Tuned
 metadata:
-  name: performance-patch
+  name: {{ .metadata.name }}
   namespace: openshift-cluster-node-tuning-operator
   annotations:
     ran.openshift.io/ztp-deploy-wave: "10"
@@ -13,10 +13,24 @@ spec:
       #   include=openshift-node-performance-${PerformanceProfile.metadata.name}
       # - When using the standard (non-realtime) kernel, remove the kernel.timer_migration override from
       #   the [sysctl] section and remove the entire section if it is empty.
+      {{- /* Iterate through all PerformanceProfile objects for one that matches the intended role of this Tuned profile to find its name */}}
+      {{- $profileName := "openshift-node-performance-profile" }}
+      {{- $profiles := lookupCRs "performance.openshift.io/v2" "PerformanceProfile" "*" "*" }}
+      {{- /* Consider all 'recommend' sections in this Tuned profile */}}
+      {{- range $r := .spec.recommend }}
+        {{- range $profile := $profiles }}
+          {{- $role := index $r.machineConfigLabels "machineconfiguration.openshift.io/role" }}
+          {{- $selector := printf "pools.operator.machineconfiguration.openshift.io/%s" $role }}
+          {{- $profileSelectors := $profile.spec.machineConfigPoolSelector | default dict }}
+          {{- if hasKey $profileSelectors $selector }}
+            {{- $profileName = $profile.metadata.name }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
       data: |
         [main]
         summary=Configuration changes profile inherited from performance created tuned
-        include=openshift-node-performance-openshift-node-performance-profile
+        include=openshift-node-performance-{{ $profileName }}
         [scheduler]
         group.ice-ptp=0:f:10:*:ice-ptp.*
         group.ice-gnss=0:f:10:*:ice-gnss.*

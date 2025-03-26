@@ -5,7 +5,7 @@ metadata:
   # matches this name: include=openshift-node-performance-${PerformanceProfile.metadata.name}
   # Also in file 'validatorCRs/informDuValidator.yaml': 
   # name: 50-performance-${PerformanceProfile.metadata.name}
-  name: openshift-node-performance-profile
+  name: {{ .metadata.name }}
   annotations:
     ran.openshift.io/ztp-deploy-wave: "10"
     ran.openshift.io/reference-configuration: "ran-du.redhat.com"

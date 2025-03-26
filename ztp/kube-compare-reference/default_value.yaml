@@ -297,12 +297,16 @@ optional_nmstate_NMStateSubscription:
 - spec:
     source: redhat-operators-disconnected
 required_node_tuning_operator_TunedPerformancePatch:
-- spec:
+- metadata:
+      name: performance-patch
+  spec:
     recommend:
     - machineConfigLabels:
         machineconfiguration.openshift.io/role: "$mcp"
 required_node_tuning_operator_PerformanceProfile:
-- spec:
+- metadata:
+    name: openshift-node-performance-profile
+  spec:
     additionalKernelArgs:
     - "rcupdate.rcu_normal_after_boot=0"
     - "efi=runtime"
@@ -363,3 +367,11 @@ required_sriov_operator_SriovOperatorConfigForSNO:
 required_sriov_operator_SriovSubscription:
 - spec:
     source: redhat-operators-disconnected
+global:
+  lookup_substitutions:
+    lookupCRs_performance_openshift_io_v2_PerformanceProfile:
+      - metadata:
+          name: openshift-node-performance-profile
+        spec:
+          machineConfigPoolSelector:
+            pools.operator.machineconfiguration.openshift.io/$mcp: ""
